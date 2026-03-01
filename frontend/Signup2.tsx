@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import { Text, TextInput } from './components/GlobalComponents';
 import Background from './Background';
 import { styles } from '../css style/Signup.styles';
@@ -22,11 +22,20 @@ interface Signup2Props {
   setOfficeEmail: (value: string) => void;
   officeOtp: string;
   setOfficeOtp: (value: string) => void;
+  mobileNumber: string;
+  setMobileNumber: (value: string) => void;
+  guestOtp: string;
+  setGuestOtp: (value: string) => void;
+  otpCountdown: number;
+  setOtpCountdown: (value: number) => void;
+  guestStep: 'mobile' | 'otp' | 'final';
   adminStep: 'email_college' | 'otp_verify' | 'final_fields';
   isVerifyingEmail: boolean;
   isVerifyingOtp: boolean;
+  isVerifyingGuestOtp: boolean;
   usernameError: string;
   passwordError: string;
+  collegeError: string;
   showCollegeDropdown: boolean;
   onToggleCollegeDropdown: () => void;
   onCloseDropdowns: () => void;
@@ -34,8 +43,11 @@ interface Signup2Props {
   onHandleSignup: () => void;
   onVerifyEmail: () => void;
   onVerifyOtp: () => void;
+  onVerifyGuestOtp: () => void;
+  onSendGuestOtp: () => void;
   onGoToLogin: () => void;
   onSetAdminStep: (step: 'email_college' | 'otp_verify' | 'final_fields') => void;
+  onSetGuestStep: (step: 'mobile' | 'otp' | 'final') => void;
 }
 
 const COLLEGES = [
@@ -63,11 +75,20 @@ export default function Signup2({
   setOfficeEmail,
   officeOtp,
   setOfficeOtp,
+  mobileNumber,
+  setMobileNumber,
+  guestOtp,
+  setGuestOtp,
+  otpCountdown,
+  setOtpCountdown,
+  guestStep,
   adminStep,
   isVerifyingEmail,
   isVerifyingOtp,
+  isVerifyingGuestOtp,
   usernameError,
   passwordError,
+  collegeError,
   showCollegeDropdown,
   onToggleCollegeDropdown,
   onCloseDropdowns,
@@ -75,23 +96,28 @@ export default function Signup2({
   onHandleSignup,
   onVerifyEmail,
   onVerifyOtp,
+  onVerifyGuestOtp,
+  onSendGuestOtp,
   onGoToLogin,
+  onSetAdminStep,
+  onSetGuestStep,
 }: Signup2Props) {
   const renderCollegeDropdown = () => (
-    <View style={[styles.dropdownContainer, showCollegeDropdown && styles.dropdownContainerActive]}>
+    <View style={[styles.dropdownContainer, showCollegeDropdown && styles.dropdownContainerActive, !!collegeError && styles.dropdownContainerError]}>
       <TouchableOpacity
-        style={styles.dropdownButton}
+        style={[styles.dropdownButton, !!collegeError && styles.dropdownButtonError]}
         onPress={onToggleCollegeDropdown}
       >
         <Text
           style={[
             styles.dropdownButtonText,
             collegeName === 'Select college' && styles.placeholderText,
+            !!collegeError && styles.dropdownButtonTextError,
           ]}
         >
           {collegeName || 'Select college'}
         </Text>
-        <Text style={styles.dropdownArrow}>
+        <Text style={[styles.dropdownArrow, !!collegeError && styles.dropdownArrowError]}>
           {showCollegeDropdown ? '▲' : '▼'}
         </Text>
       </TouchableOpacity>
@@ -160,7 +186,7 @@ export default function Signup2({
   if (userType === 'Student/Staff') {
     return (
       <Background>
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.logoContainer}>
             <Text style={styles.appName}>Student/Staff Signup</Text>
           </View>
@@ -173,15 +199,90 @@ export default function Signup2({
             />
           )}
 
-          {renderCommonFields()}
+          {/* Step 1: Mobile Number */}
+          {guestStep === 'mobile' && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Mobile Number"
+                value={mobileNumber}
+                onChangeText={setMobileNumber}
+                keyboardType="phone-pad"
+                maxLength={10}
+              />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Enter E-Canteen Card ID"
-            value={studentCardId}
-            onChangeText={setStudentCardId}
-          />
-        </View>
+              <TouchableOpacity
+                style={[styles.button, !mobileNumber.trim() && styles.buttonDisabled]}
+                onPress={onSendGuestOtp}
+                disabled={!mobileNumber.trim()}
+              >
+                <Text style={styles.buttonText}>Send OTP</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 2: OTP Verification */}
+          {guestStep === 'otp' && (
+            <>
+              <Text style={styles.infoText}>OTP sent to {mobileNumber}</Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Enter OTP"
+                value={guestOtp}
+                onChangeText={setGuestOtp}
+                keyboardType="number-pad"
+                maxLength={6}
+              />
+
+              <TouchableOpacity
+                style={[styles.button, !guestOtp.trim() && styles.buttonDisabled]}
+                onPress={onVerifyGuestOtp}
+                disabled={!guestOtp.trim() || isVerifyingGuestOtp}
+              >
+                <Text style={styles.buttonText}>
+                  {isVerifyingGuestOtp ? 'Verifying...' : 'Verify OTP'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, otpCountdown > 0 && styles.buttonDisabled]}
+                onPress={onSendGuestOtp}
+                disabled={otpCountdown > 0}
+              >
+                <Text style={styles.buttonText}>
+                  {otpCountdown > 0 ? `Resend OTP in ${otpCountdown}s` : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 3: Final Fields */}
+          {guestStep === 'final' && (
+            <>
+              {renderCollegeDropdown()}
+              {!!collegeError && <Text style={styles.errorText}>{collegeError}</Text>}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                value={username}
+                onChangeText={(t: string) => {
+                  setUsername(t);
+                }}
+              />
+              {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
+
+              <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+                <Text style={styles.buttonText}>Complete Signup</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity onPress={onGoToLogin}>
+            <Text style={styles.linkText}>Already have an account? Login</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </Background>
     );
   }
@@ -286,26 +387,102 @@ export default function Signup2({
                 }}
               />
               {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
+              <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+                <Text style={styles.buttonText}>Complete Signup</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity onPress={onGoToLogin}>
+            <Text style={styles.linkText}>Already have an account? Login</Text>
+          </TouchableOpacity>
+        </View>
+      </Background>
+    );
+  }
+
+  // Guest Flow
+  if (userType === 'Guest') {
+    return (
+      <Background>
+        <View style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.appName}>Guest Signup</Text>
+          </View>
+
+          {/* Step 1: Mobile Number */}
+          {guestStep === 'mobile' && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Mobile Number"
+                value={mobileNumber}
+                onChangeText={setMobileNumber}
+                keyboardType="phone-pad"
+                maxLength={10}
+              />
+
+              <TouchableOpacity
+                style={[styles.button, !mobileNumber.trim() && styles.buttonDisabled]}
+                onPress={onSendGuestOtp}
+                disabled={!mobileNumber.trim()}
+              >
+                <Text style={styles.buttonText}>Send OTP</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 2: OTP Verification */}
+          {guestStep === 'otp' && (
+            <>
+              <Text style={styles.infoText}>OTP sent to {mobileNumber}</Text>
 
               <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={(text: string) => {
-                  setPassword(text);
-                }}
+                style={styles.input}
+                placeholder="Enter OTP"
+                value={guestOtp}
+                onChangeText={setGuestOtp}
+                keyboardType="number-pad"
+                maxLength={6}
               />
+
+              <TouchableOpacity
+                style={[styles.button, !guestOtp.trim() && styles.buttonDisabled]}
+                onPress={onVerifyGuestOtp}
+                disabled={!guestOtp.trim() || isVerifyingGuestOtp}
+              >
+                <Text style={styles.buttonText}>
+                  {isVerifyingGuestOtp ? 'Verifying...' : 'Verify OTP'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, otpCountdown > 0 && styles.buttonDisabled]}
+                onPress={onSendGuestOtp}
+                disabled={otpCountdown > 0}
+              >
+                <Text style={styles.buttonText}>
+                  {otpCountdown > 0 ? `Resend OTP in ${otpCountdown}s` : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 3: Final Fields */}
+          {guestStep === 'final' && (
+            <>
+              {renderCollegeDropdown()}
+              {!!collegeError && <Text style={styles.errorText}>{collegeError}</Text>}
+
               <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Confirm Password"
-                secureTextEntry
-                value={confirm_password}
-                onChangeText={(text: string) => {
-                  setConfirmPassword(text);
+                style={styles.input}
+                placeholder="Username"
+                value={username}
+                onChangeText={(t: string) => {
+                  setUsername(t);
                 }}
               />
-              {!!passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+              {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
 
               <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
                 <Text style={styles.buttonText}>Complete Signup</Text>

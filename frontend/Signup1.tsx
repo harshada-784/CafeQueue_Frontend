@@ -84,6 +84,12 @@ export default function Signup1({
               >
                 <Text style={styles.dropdownItemText}>Canteen Admin Office</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => handleDropdownSelect('guest', 'Guest')}
+              >
+                <Text style={styles.dropdownItemText}>Guest</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -92,8 +98,8 @@ export default function Signup1({
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onGuestContinue}>
-          <Text style={styles.guestLinkText}>Continue as guest</Text>
+        <TouchableOpacity onPress={onGoToLogin}>
+          <Text style={styles.linkText}>Already have an account? Login</Text>
         </TouchableOpacity>
       </View>
     </Background>

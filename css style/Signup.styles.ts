@@ -86,6 +86,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
+  // Error styles for dropdown
+  dropdownContainerError: {
+    borderWidth: 1,
+    borderColor: 'red',
+    borderRadius: 8,
+  },
+  dropdownButtonError: {
+    borderColor: 'red',
+  },
+  dropdownButtonTextError: {
+    color: 'red',
+  },
+  dropdownArrowError: {
+    color: 'red',
+  },
   dropdownList: {
     position: 'absolute',
     top: 52,
@@ -97,7 +112,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
-    maxHeight: 150,
+    maxHeight: 180,
     zIndex: 1001,
   },
   dropdownListActive: {

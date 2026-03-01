@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CanteenAdminHP from './Shops/canteen_admin_hp';
 import CanteenAdminOfficeHP from './College Admin/CollegeAdminOfficeHP';
 import Login from './Login';
@@ -22,18 +22,35 @@ export default function Signup() {
   const [showUserHome, setShowUserHome] = useState(false);
   const [showAdminOfficeHome, setShowAdminOfficeHome] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [collegeError, setCollegeError] = useState('');
   const [officeEmail, setOfficeEmail] = useState('');
   const [officeOtp, setOfficeOtp] = useState('');
   const [studentCardId, setStudentCardId] = useState('');
   const [shopId, setShopId] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [guestOtp, setGuestOtp] = useState('');
+  const [otpCountdown, setOtpCountdown] = useState(0);
 
   // Admin office verification flow
   const [adminStep, setAdminStep] = useState<'email_college' | 'otp_verify' | 'final_fields'>('email_college');
+  // Guest/Student/Staff verification flow
+  const [guestStep, setGuestStep] = useState<'mobile' | 'otp' | 'final'>('mobile');
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isVerifyingGuestOtp, setIsVerifyingGuestOtp] = useState(false);
 
   // Step control
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Countdown timer effect - MUST be before any conditional returns
+  useEffect(() => {
+    if (otpCountdown > 0) {
+      const timer = setTimeout(() => {
+        setOtpCountdown(otpCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [otpCountdown]);
 
   if (showLogin) return <Login />;
   if (showAdminHome) return <CanteenAdminHP userName={username || 'User'} />;
@@ -47,16 +64,37 @@ export default function Signup() {
     if (label === 'Student/Staff') {
       setCollegeName('Select college');
       setStudentCardId('');
+      setMobileNumber('');
+      setGuestOtp('');
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+      setCollegeError('');
+      setGuestStep('mobile');
     } else if (label === 'Canteen Shop') {
       setCollegeName('Select college');
       setShopId('');
+      setMobileNumber('');
+      setGuestOtp('');
     } else if (label === 'Canteen Admin Office') {
       setCollegeName('');
       setOfficeEmail('');
       setOfficeOtp('');
+      setMobileNumber('');
+      setGuestOtp('');
       setAdminStep('email_college');
       setIsVerifyingEmail(false);
       setIsVerifyingOtp(false);
+      setIsVerifyingGuestOtp(false);
+    } else if (label === 'Guest') {
+      setCollegeName('Select college');
+      setMobileNumber('');
+      setGuestOtp('');
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+      setCollegeError('');
+      setGuestStep('mobile');
     }
   };
 
@@ -93,9 +131,12 @@ export default function Signup() {
       setUsernameError('Username already taken');
       return;
     }
-    if (password !== confirm_password) {
-      setPasswordError('Passwords do not match');
-      return;
+    // Password check only for Canteen Shop and Canteen Admin Office
+    if (userType === 'Canteen Shop' || userType === 'Canteen Admin Office') {
+      if (password !== confirm_password) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
     }
     setPasswordError('');
     addUsername(trimmed);
@@ -109,8 +150,12 @@ export default function Signup() {
       setShowAdminOfficeHome(true);
       return;
     }
-    if (userType === 'Student/Staff') {
-      if (!collegeName || collegeName === 'Select college') return;
+    if (userType === 'Student/Staff' || userType === 'Guest') {
+      if (!collegeName || collegeName === 'Select college') {
+        setCollegeError('Please select a college');
+        return;
+      }
+      setCollegeError('');
       setShowUserHome(true);
       return;
     }
@@ -119,6 +164,23 @@ export default function Signup() {
   const handleGuestContinue = () => {
     setUsername('Guest');
     setShowUserHome(true);
+  };
+
+  const handleVerifyGuestOtp = async () => {
+    if (!guestOtp.trim()) return;
+    setIsVerifyingGuestOtp(true);
+    setTimeout(() => {
+      setIsVerifyingGuestOtp(false);
+      setGuestStep('final');
+    }, 2000);
+  };
+
+  const handleSendGuestOtp = () => {
+    if (mobileNumber.trim()) {
+      console.log('OTP sent to:', mobileNumber);
+      setOtpCountdown(30);
+      setGuestStep('otp');
+    }
   };
 
   const handleContinueFromStep1 = () => {
@@ -178,11 +240,20 @@ export default function Signup() {
       setOfficeEmail={setOfficeEmail}
       officeOtp={officeOtp}
       setOfficeOtp={setOfficeOtp}
+      mobileNumber={mobileNumber}
+      setMobileNumber={setMobileNumber}
+      guestOtp={guestOtp}
+      setGuestOtp={setGuestOtp}
+      otpCountdown={otpCountdown}
+      setOtpCountdown={setOtpCountdown}
+      guestStep={guestStep}
       adminStep={adminStep}
       isVerifyingEmail={isVerifyingEmail}
       isVerifyingOtp={isVerifyingOtp}
+      isVerifyingGuestOtp={isVerifyingGuestOtp}
       usernameError={usernameError}
       passwordError={passwordError}
+      collegeError={collegeError}
       showCollegeDropdown={showCollegeDropdown}
       onToggleCollegeDropdown={toggleCollegeDropdown}
       onCloseDropdowns={closeDropdowns}
@@ -190,8 +261,11 @@ export default function Signup() {
       onHandleSignup={handleSignup}
       onVerifyEmail={handleVerifyEmail}
       onVerifyOtp={handleVerifyOtp}
+      onVerifyGuestOtp={handleVerifyGuestOtp}
+      onSendGuestOtp={handleSendGuestOtp}
       onGoToLogin={() => setShowLogin(true)}
       onSetAdminStep={setAdminStep}
+      onSetGuestStep={setGuestStep}
     />
   );
 }
