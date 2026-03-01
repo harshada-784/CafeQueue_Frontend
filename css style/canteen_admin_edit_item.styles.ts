@@ -12,4 +12,10 @@ export const styles = StyleSheet.create({
   preview: { width: '100%', height: 140, borderRadius: 12, backgroundColor: '#f3f3f3' },
   button: { width: '100%', height: 52, borderRadius: 10, backgroundColor: '#4CAF50', alignItems: 'center', justifyContent: 'center', marginTop: 6 },
   buttonText: { color: '#fff', fontWeight: '800', fontSize: 16 },
+  imageSection: { width: '100%', alignItems: 'center', marginBottom: 14 },
+  imagePreviewContainer: { width: '100%', alignItems: 'center' },
+  addImageBtn: { width: '100%', height: 120, borderWidth: 2, borderColor: '#ddd', borderStyle: 'dashed', borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9f9f9' },
+  addImageBtnText: { fontSize: 16, color: '#666', fontWeight: '600', marginTop: 8 },
+  changeImageBtn: { marginTop: 8, backgroundColor: '#FF9800', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  changeImageBtnText: { color: '#fff', fontSize: 14, fontWeight: '600' },
 });

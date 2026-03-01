@@ -1,185 +1,126 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
-import { Text, TextInput } from '../components/GlobalComponents';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Background from '../Background';
 import Login from '../Login';
-import CanteenAdminMenu from './canteen_admin_menu';
 import CanteenAdminAddItem from './canteen_admin_add_item';
 import CanteenAdminEditItem from './canteen_admin_edit_item';
-import CanteenAdminProfile from './canteen_admin_profile';
-import ShopCard from './ShopCard';
-import CanteenOrders from './CanteenOrders';
+import { getItems, subscribe, setAvailable, deleteItem, SpecialItem } from '../dailySpecialsStore';
+import Header from './components/Header';
+import MenuContent from './components/MenuContent';
+import OrdersContent from './components/OrdersContent';
+import AnalyticsContent from './components/AnalyticsContent';
+import ProfileContent from './components/ProfileContent';
+import ShopCardContent from './components/ShopCardContent';
+import FooterNavigation from './components/FooterNavigation';
 
 type Props = {
   userName?: string;
   currentUsername?: string;
 };
 
+type ActiveTab = 'menu' | 'orders' | 'profile' | 'shop_card' | 'analytics';
+
 export default function CanteenAdminHP({ userName = 'User', currentUsername = '' }: Props) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [logout, setLogout] = useState(false);
-  const [view, setView] = useState<'home' | 'menu' | 'add' | 'edit' | 'profile' | 'shop_card' | 'orders'>('home');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('menu');
+  const [showAddItem, setShowAddItem] = useState(false);
+  const [showEditItem, setShowEditItem] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [displayName, setDisplayName] = useState(userName);
   const [accountUsername, setAccountUsername] = useState(currentUsername);
   const [displayPhotoUri, setDisplayPhotoUri] = useState<string | undefined>(undefined);
+  
+  // Profile form state
+  const [profileName, setProfileName] = useState(userName);
+  const [profileUsername, setProfileUsername] = useState(currentUsername);
+  const [profilePhoto, setProfilePhoto] = useState<string | undefined>(undefined);
+  const [profilePhotoError, setProfilePhotoError] = useState<string | null>(null);
+  
+  // Menu state
+  const [items, setItems] = useState<SpecialItem[]>(getItems());
+  const [menuSearch, setMenuSearch] = useState('');
+
+  // Orders state for inline display
+  const [ordersTab, setOrdersTab] = useState<'incoming' | 'picked' | 'previous'>('incoming');
+  const [allOrders, setAllOrders] = useState([
+    { id: '001', customerName: 'John Doe', items: [{ name: 'Burger', quantity: 2, price: 120 }, { name: 'Fries', quantity: 1, price: 80 }], total: 320, status: 'pending' as const, orderTime: '10:30 AM', estimatedTime: '10:45 AM' },
+    { id: '002', customerName: 'Jane Smith', items: [{ name: 'Pizza', quantity: 1, price: 250 }, { name: 'Cold Drink', quantity: 2, price: 60 }], total: 370, status: 'preparing' as const, orderTime: '10:15 AM', estimatedTime: '10:35 AM' },
+    { id: '004', customerName: 'Sarah Wilson', items: [{ name: 'Sandwich', quantity: 1, price: 90 }, { name: 'Coffee', quantity: 1, price: 50 }], total: 140, status: 'ready' as const, orderTime: '10:20 AM' },
+  ]);
+
+  useEffect(() => {
+    const unsub = subscribe(() => setItems(getItems()));
+    return unsub;
+  }, []);
 
   if (logout) return <Login />;
 
-  // Nested routing for Menu -> Add/Edit
-  if (view === 'menu') {
-    return (
-      <CanteenAdminMenu
-        userName={userName}
-        onBack={() => setView('home')}
-        onOpenAdd={() => setView('add')}
-        onOpenEdit={(id) => { setEditId(id); setView('edit'); }}
-      />
-    );
+  // Add/Edit item modals
+  if (showAddItem) {
+    return <CanteenAdminAddItem onDone={() => setShowAddItem(false)} onBack={() => setShowAddItem(false)} />;
   }
-  if (view === 'add') {
-    return <CanteenAdminAddItem onDone={() => setView('menu')} onBack={() => setView('menu')} />;
-  }
-  if (view === 'edit' && editId != null) {
-    return <CanteenAdminEditItem itemId={editId} onDone={() => setView('menu')} onBack={() => setView('menu')} />;
-  }
-  if (view === 'profile') {
-    return (
-      <CanteenAdminProfile
-        userName={displayName}
-        currentPhotoUri={displayPhotoUri}
-        onSave={(n: string, u: string, photo?: string) => {
-          setDisplayName(n);
-          setAccountUsername(u);
-          setDisplayPhotoUri(photo);
-          setView('home');
-        }}
-        onBack={() => setView('home')}
-      />
-    );
-  }
-
-  if (view === 'shop_card') {
-    return (
-      <ShopCard
-        onBack={() => setView('home')}
-        userName={displayName}
-        shopId={accountUsername}
-      />
-    );
-  }
-
-  if (view === 'orders') {
-    return (
-      <CanteenOrders
-        onBack={() => setView('home')}
-      />
-    );
+  if (showEditItem && editId != null) {
+    return <CanteenAdminEditItem itemId={editId} onDone={() => setShowEditItem(false)} onBack={() => setShowEditItem(false)} />;
   }
 
   return (
-    <Background>
+    <Background theme="modern">
       <View style={styles.container}>
-        {/* Header with profile and greeting */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => setShowProfileMenu((s) => !s)} activeOpacity={0.8}>
-            <Image
-              source={require('../assets/profile-icon.png')}
-              style={styles.profilePic}
-            />
-          </TouchableOpacity>
-          <View style={styles.greetingWrap}>
-            <Text style={styles.greeting}>Hello!!</Text>
-            <Text style={styles.userName}>{displayName}</Text>
-          </View>
-          {showProfileMenu && (
-            <>
-              {/* Backdrop to close on outside tap */}
-              <TouchableOpacity
-                style={styles.backdrop}
-                activeOpacity={1}
-                onPress={() => setShowProfileMenu(false)}
-              />
-              <View style={styles.profileMenu}>
-                <TouchableOpacity style={styles.profileMenuItem} onPress={() => setLogout(true)}>
-                  <Text style={styles.profileMenuText}>Logout</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-        </View>
+        {/* Header */}
+        <Header
+          displayName={displayName}
+          showProfileMenu={showProfileMenu}
+          setShowProfileMenu={setShowProfileMenu}
+          setLogout={setLogout}
+        />
 
-        {/* Search */}
-        <View style={styles.searchWrap}>
-          <TextInput
-            placeholder="Search..."
-            placeholderTextColor="#666"
-            style={styles.searchInput}
+        {/* Content based on active tab */}
+        {activeTab === 'menu' && (
+          <MenuContent
+            items={items}
+            menuSearch={menuSearch}
+            setMenuSearch={setMenuSearch}
+            setShowAddItem={setShowAddItem}
+            setEditId={setEditId}
+            setShowEditItem={setShowEditItem}
+            setAvailable={setAvailable}
+            deleteItem={deleteItem}
           />
-        </View>
+        )}
 
-        {/* Big tiles */}
-        <View style={styles.tilesGrid}>
-          <TouchableOpacity
-            style={styles.tile}
-            activeOpacity={0.9}
-            onPress={() => {
-              if (showProfileMenu) setShowProfileMenu(false);
-              setView('menu');
-            }}
-          >
-            <Image
-              source={require('../assets/menu_image.png')}
-              style={styles.tileImage}
-            />
-            <Text style={styles.tileLabel}>Menu</Text>
-          </TouchableOpacity>
+        {activeTab === 'orders' && (
+          <OrdersContent
+            ordersTab={ordersTab}
+            setOrdersTab={setOrdersTab}
+            allOrders={allOrders}
+          />
+        )}
 
-          <TouchableOpacity
-            style={[styles.tile, styles.tileEmphasis]}
-            activeOpacity={0.9}
-            onPress={() => {
-              if (showProfileMenu) setShowProfileMenu(false);
-              setView('orders');
-            }}
-          >
-            <Image
-              source={require('../assets/order_image.png')}
-              style={styles.tileImage}
-            />
-            <Text style={styles.tileLabel}>Orders</Text>
-          </TouchableOpacity>
+        {activeTab === 'analytics' && <AnalyticsContent />}
 
-          {/* Profile tile */}
-          <TouchableOpacity
-            style={styles.tile}
-            activeOpacity={0.9}
-            onPress={() => {
-              if (showProfileMenu) setShowProfileMenu(false);
-              setView('profile');
-            }}
-          >
-            <Image
-              source={require('../assets/shop.png')}
-              style={styles.tileImage}
-            />
-            <Text style={styles.tileLabel}>Profile</Text>
-          </TouchableOpacity>
+        {activeTab === 'profile' && (
+          <ProfileContent
+            profileName={profileName}
+            setProfileName={setProfileName}
+            profileUsername={profileUsername}
+            setProfileUsername={setProfileUsername}
+            profilePhoto={profilePhoto}
+            profilePhotoError={profilePhotoError}
+          />
+        )}
 
-          <TouchableOpacity
-            style={styles.tile}
-            activeOpacity={0.9}
-            onPress={() => {
-              if (showProfileMenu) setShowProfileMenu(false);
-              setView('shop_card');
-            }}
-          >
-            <View style={styles.tileIconContainer}>
-              <Text style={styles.tileIcon}>💳</Text>
-            </View>
-            <Text style={styles.tileLabel}>Shop Card</Text>
-          </TouchableOpacity>
-        </View>
+        {activeTab === 'shop_card' && (
+          <ShopCardContent
+            displayName={displayName}
+          />
+        )}
+
+        {/* Footer Navigation */}
+        <FooterNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </View>
     </Background>
   );
@@ -190,127 +131,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 40,
     paddingHorizontal: 20,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  profilePic: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    marginRight: 10,
-    backgroundColor: '#ddd',
-  },
-  // Profile dropdown
-  profileMenu: {
-    position: 'absolute',
-    top: 34,
-    left: 0,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    paddingVertical: 6,
-    minWidth: 140,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    zIndex: 3000,
-  },
-  profileMenuItem: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  profileMenuText: {
-    fontSize: 16,
-    color: '#111',
-    fontWeight: '600',
-  },
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 2000,
-  },
-  greetingWrap: {
-    flexDirection: 'column',
-  },
-  greeting: {
-    fontSize: 16,
-    color: '#111',
-    fontWeight: '600',
-  },
-  userName: {
-    fontSize: 18,
-    color: '#111',
-    fontWeight: '800',
-  },
-  searchWrap: {
-    marginBottom: 18,
-  },
-  searchInput: {
-    height: 42,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    borderWidth: 1,
-    borderColor: '#e3e3e3',
-  },
-  tilesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 18,
-    columnGap: 18,
-    marginTop: 12,
-  },
-  tile: {
-    width: '46%',
-    aspectRatio: 1,
-    backgroundColor: 'rgba(255,255,255,0.94)',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#d9d9d9',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-    padding: 10,
-  },
-  tileEmphasis: {
-    borderColor: '#bdbdbd',
-    elevation: 3,
-  },
-  tileImage: {
-    width: 72,
-    height: 72,
-    marginBottom: 8,
-  },
-  tileIconContainer: {
-    width: 72,
-    height: 72,
-    marginBottom: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FF9800',
-    borderRadius: 36,
-  },
-  tileIcon: {
-    fontSize: 36,
-    color: '#fff',
-  },
-  tileLabel: {
-    fontSize: 18,
-    color: '#111',
-    fontWeight: '700',
   },
 });

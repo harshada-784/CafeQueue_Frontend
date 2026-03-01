@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
+import { View, TouchableOpacity, Image, Alert, Platform } from 'react-native';
+import { launchImageLibrary, ImagePickerResponse, MediaType } from 'react-native-image-picker';
 import { Text, TextInput } from '../components/GlobalComponents';
 import Background from '../Background';
 import { addItem } from '../dailySpecialsStore';
@@ -14,6 +15,29 @@ export default function CanteenAdminAddItem({ onDone, onBack }: Props) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [imageUri, setImageUri] = useState('');
+
+  const handleImagePicker = () => {
+    const options = {
+      mediaType: 'photo' as MediaType,
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+      quality: 0.8 as any,
+    };
+
+    launchImageLibrary(options, (response: ImagePickerResponse) => {
+      if (response.didCancel || response.errorMessage) {
+        return;
+      }
+
+      if (response.assets && response.assets[0]) {
+        const imageUri = response.assets[0].uri;
+        if (imageUri) {
+          setImageUri(imageUri);
+        }
+      }
+    });
+  };
 
   const handleAdd = () => {
     const n = name.trim();
@@ -50,22 +74,33 @@ export default function CanteenAdminAddItem({ onDone, onBack }: Props) {
           value={price}
           onChangeText={setPrice}
         />
-        <TextInput
-          placeholder="Image URL (optional)"
-          placeholderTextColor="#666"
-          style={styles.input}
-          value={imageUri}
-          onChangeText={setImageUri}
-        />
-        {!!imageUri?.trim() && (
-          <View style={styles.previewWrap}>
-            <Image
-              source={{ uri: imageUri.trim() }}
-              style={styles.preview}
-              resizeMode="cover"
-            />
-          </View>
-        )}
+        
+        {/* Image Section */}
+        <View style={styles.imageSection}>
+          {imageUri?.trim() ? (
+            <View style={styles.imagePreviewContainer}>
+              <Image
+                source={{ uri: imageUri.trim() }}
+                style={styles.preview}
+                resizeMode="cover"
+              />
+              <TouchableOpacity 
+                style={styles.changeImageBtn}
+                onPress={handleImagePicker}
+              >
+                <Text style={styles.changeImageBtnText}>📷 Change Image</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity 
+              style={styles.addImageBtn}
+              onPress={handleImagePicker}
+            >
+              <Text style={styles.addImageBtnText}>📷 Add Image from Gallery</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        
         <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>Proceed to Add</Text>
         </TouchableOpacity>

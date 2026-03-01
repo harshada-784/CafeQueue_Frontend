@@ -18,6 +18,8 @@ interface Signup2Props {
   setStudentCardId: (value: string) => void;
   shopId: string;
   setShopId: (value: string) => void;
+  shopName: string;
+  setShopName: (value: string) => void;
   officeEmail: string;
   setOfficeEmail: (value: string) => void;
   officeOtp: string;
@@ -30,6 +32,7 @@ interface Signup2Props {
   setOtpCountdown: (value: number) => void;
   guestStep: 'mobile' | 'otp' | 'final';
   adminStep: 'email_college' | 'otp_verify' | 'final_fields';
+  shopStep: 'shop_id' | 'otp' | 'final';
   isVerifyingEmail: boolean;
   isVerifyingOtp: boolean;
   isVerifyingGuestOtp: boolean;
@@ -48,6 +51,10 @@ interface Signup2Props {
   onGoToLogin: () => void;
   onSetAdminStep: (step: 'email_college' | 'otp_verify' | 'final_fields') => void;
   onSetGuestStep: (step: 'mobile' | 'otp' | 'final') => void;
+  onSetShopStep: (step: 'shop_id' | 'otp' | 'final') => void;
+  onVerifyShopOtp: () => void;
+  onSendShopOtp: () => void;
+  onBackToStep1: () => void;
 }
 
 const COLLEGES = [
@@ -71,6 +78,8 @@ export default function Signup2({
   setStudentCardId,
   shopId,
   setShopId,
+  shopName,
+  setShopName,
   officeEmail,
   setOfficeEmail,
   officeOtp,
@@ -83,6 +92,7 @@ export default function Signup2({
   setOtpCountdown,
   guestStep,
   adminStep,
+  shopStep,
   isVerifyingEmail,
   isVerifyingOtp,
   isVerifyingGuestOtp,
@@ -101,6 +111,10 @@ export default function Signup2({
   onGoToLogin,
   onSetAdminStep,
   onSetGuestStep,
+  onSetShopStep,
+  onVerifyShopOtp,
+  onSendShopOtp,
+  onBackToStep1,
 }: Signup2Props) {
   const renderCollegeDropdown = () => (
     <View style={[styles.dropdownContainer, showCollegeDropdown && styles.dropdownContainerActive, !!collegeError && styles.dropdownContainerError]}>
@@ -282,6 +296,10 @@ export default function Signup2({
           <TouchableOpacity onPress={onGoToLogin}>
             <Text style={styles.linkText}>Already have an account? Login</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={onBackToStep1}>
+            <Text style={styles.linkText}>← Back to User Type</Text>
+          </TouchableOpacity>
         </ScrollView>
       </Background>
     );
@@ -304,14 +322,100 @@ export default function Signup2({
             />
           )}
 
-          {renderCommonFields()}
+          {/* Step 1: E-Canteen Shop ID */}
+          {shopStep === 'shop_id' && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter E-Canteen Shop ID"
+                value={shopId}
+                onChangeText={setShopId}
+              />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Enter E-Canteen Shop ID"
-            value={shopId}
-            onChangeText={setShopId}
-          />
+              <TouchableOpacity
+                style={[styles.button, !shopId.trim() && styles.buttonDisabled]}
+                onPress={onSendShopOtp}
+                disabled={!shopId.trim()}
+              >
+                <Text style={styles.buttonText}>Send OTP</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 2: OTP Verification */}
+          {shopStep === 'otp' && (
+            <>
+              <Text style={styles.infoText}>
+                OTP sent to *******{mobileNumber.slice(-3)}
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Enter OTP"
+                value={guestOtp}
+                onChangeText={setGuestOtp}
+                keyboardType="number-pad"
+                maxLength={6}
+              />
+
+              <TouchableOpacity
+                style={[styles.button, !guestOtp.trim() && styles.buttonDisabled]}
+                onPress={onVerifyShopOtp}
+                disabled={!guestOtp.trim() || isVerifyingGuestOtp}
+              >
+                <Text style={styles.buttonText}>
+                  {isVerifyingGuestOtp ? 'Verifying...' : 'Verify OTP'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, otpCountdown > 0 && styles.buttonDisabled]}
+                onPress={onSendShopOtp}
+                disabled={otpCountdown > 0}
+              >
+                <Text style={styles.buttonText}>
+                  {otpCountdown > 0 ? `Resend OTP in ${otpCountdown}s` : 'Resend OTP'}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Step 3: Final Fields */}
+          {shopStep === 'final' && (
+            <>
+              {renderCollegeDropdown()}
+              {!!collegeError && <Text style={styles.errorText}>{collegeError}</Text>}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                value={username}
+                onChangeText={(t: string) => {
+                  setUsername(t);
+                }}
+              />
+              {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Shop Name"
+                value={shopName}
+                onChangeText={setShopName}
+              />
+
+              <TouchableOpacity style={styles.button} onPress={onHandleSignup}>
+                <Text style={styles.buttonText}>Complete Signup</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity onPress={onGoToLogin}>
+            <Text style={styles.linkText}>Already have an account? Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onBackToStep1}>
+            <Text style={styles.linkText}>← Back to User Type</Text>
+          </TouchableOpacity>
         </View>
       </Background>
     );
@@ -395,6 +499,10 @@ export default function Signup2({
 
           <TouchableOpacity onPress={onGoToLogin}>
             <Text style={styles.linkText}>Already have an account? Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onBackToStep1}>
+            <Text style={styles.linkText}>← Back to User Type</Text>
           </TouchableOpacity>
         </View>
       </Background>
@@ -492,6 +600,10 @@ export default function Signup2({
 
           <TouchableOpacity onPress={onGoToLogin}>
             <Text style={styles.linkText}>Already have an account? Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onBackToStep1}>
+            <Text style={styles.linkText}>← Back to User Type</Text>
           </TouchableOpacity>
         </View>
       </Background>

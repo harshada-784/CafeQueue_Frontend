@@ -27,6 +27,7 @@ export default function Signup() {
   const [officeOtp, setOfficeOtp] = useState('');
   const [studentCardId, setStudentCardId] = useState('');
   const [shopId, setShopId] = useState('');
+  const [shopName, setShopName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [guestOtp, setGuestOtp] = useState('');
   const [otpCountdown, setOtpCountdown] = useState(0);
@@ -35,6 +36,8 @@ export default function Signup() {
   const [adminStep, setAdminStep] = useState<'email_college' | 'otp_verify' | 'final_fields'>('email_college');
   // Guest/Student/Staff verification flow
   const [guestStep, setGuestStep] = useState<'mobile' | 'otp' | 'final'>('mobile');
+  // Canteen Shop verification flow - step: shop_id -> otp -> final
+  const [shopStep, setShopStep] = useState<'shop_id' | 'otp' | 'final'>('shop_id');
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isVerifyingGuestOtp, setIsVerifyingGuestOtp] = useState(false);
@@ -74,8 +77,13 @@ export default function Signup() {
     } else if (label === 'Canteen Shop') {
       setCollegeName('Select college');
       setShopId('');
+      setShopName('');
       setMobileNumber('');
       setGuestOtp('');
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+      setShopStep('shop_id');
     } else if (label === 'Canteen Admin Office') {
       setCollegeName('');
       setOfficeEmail('');
@@ -183,10 +191,34 @@ export default function Signup() {
     }
   };
 
+  const handleVerifyShopOtp = async () => {
+    if (!guestOtp.trim()) return;
+    setIsVerifyingGuestOtp(true);
+    setTimeout(() => {
+      setIsVerifyingGuestOtp(false);
+      setShopStep('final');
+    }, 2000);
+  };
+
+  const handleSendShopOtp = () => {
+    if (shopId.trim()) {
+      // Simulate fetching mobile number from E-Shop card
+      const fetchedMobile = '9876543210'; // This would be fetched from backend based on shopId
+      setMobileNumber(fetchedMobile);
+      console.log('OTP sent to:', fetchedMobile);
+      setOtpCountdown(30);
+      setShopStep('otp');
+    }
+  };
+
   const handleContinueFromStep1 = () => {
     if (userType !== 'Select usertype') {
       setCurrentStep(2);
     }
+  };
+
+  const handleBackToStep1 = () => {
+    setCurrentStep(1);
   };
 
   const closeDropdowns = () => {
@@ -236,6 +268,8 @@ export default function Signup() {
       setStudentCardId={setStudentCardId}
       shopId={shopId}
       setShopId={setShopId}
+      shopName={shopName}
+      setShopName={setShopName}
       officeEmail={officeEmail}
       setOfficeEmail={setOfficeEmail}
       officeOtp={officeOtp}
@@ -248,6 +282,7 @@ export default function Signup() {
       setOtpCountdown={setOtpCountdown}
       guestStep={guestStep}
       adminStep={adminStep}
+      shopStep={shopStep}
       isVerifyingEmail={isVerifyingEmail}
       isVerifyingOtp={isVerifyingOtp}
       isVerifyingGuestOtp={isVerifyingGuestOtp}
@@ -266,6 +301,10 @@ export default function Signup() {
       onGoToLogin={() => setShowLogin(true)}
       onSetAdminStep={setAdminStep}
       onSetGuestStep={setGuestStep}
+      onSetShopStep={setShopStep}
+      onVerifyShopOtp={handleVerifyShopOtp}
+      onSendShopOtp={handleSendShopOtp}
+      onBackToStep1={handleBackToStep1}
     />
   );
 }

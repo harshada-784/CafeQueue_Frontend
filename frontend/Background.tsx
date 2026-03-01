@@ -1,16 +1,31 @@
 import React, { PropsWithChildren } from 'react';
-import { ImageBackground } from 'react-native';
-import { styles } from '../css style/Background.styles';
+import { ImageBackground, View, StyleSheet } from 'react-native';
+import { styles, backgroundOptions } from '../css style/Background.styles';
 
-export default function Background({ children }: PropsWithChildren) {
+interface BackgroundProps extends PropsWithChildren {
+  theme?: keyof typeof backgroundOptions;
+}
+
+export default function Background({ children, theme = 'coffee' }: BackgroundProps) {
+  const selectedTheme = backgroundOptions[theme];
+  
+  if (selectedTheme.image) {
+    return (
+      <ImageBackground
+        source={selectedTheme.image}
+        style={[styles.background, { backgroundColor: selectedTheme.backgroundColor }]}
+        imageStyle={[styles.backgroundImage, { opacity: selectedTheme.imageOpacity }]}
+      >
+        {children}
+      </ImageBackground>
+    );
+  }
+  
+  // For minimal theme or themes without images
   return (
-    <ImageBackground
-      source={require('./assets/coffeebeans.png')}
-      style={styles.background}
-      imageStyle={styles.backgroundImage}
-    >
+    <View style={[styles.background, { backgroundColor: selectedTheme.backgroundColor }]}>
       {children}
-    </ImageBackground>
+    </View>
   );
 }
 
