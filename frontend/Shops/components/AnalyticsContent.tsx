@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Image } from 'react-native';
 import { Text } from '../../components/GlobalComponents';
 
 export default function AnalyticsContent() {
@@ -41,7 +41,11 @@ export default function AnalyticsContent() {
       <View style={styles.chartCard}>
         <Text style={styles.chartTitle}>Weekly Performance</Text>
         <View style={styles.chartPlaceholder}>
-          <Text style={styles.chartText}>📈 Chart coming soon...</Text>
+          <Image 
+            source={require('../../assets/order_image.png')} 
+            style={styles.chartImage}
+            resizeMode="contain"
+          />
         </View>
       </View>
     </ScrollView>
@@ -146,6 +150,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  chartImage: {
+    width: '100%',
+    height: '100%',
   },
   chartText: {
     fontSize: 16,

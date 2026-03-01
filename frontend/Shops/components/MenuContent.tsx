@@ -8,36 +8,36 @@ const getFoodImage = (itemName: string) => {
   const name = itemName.toLowerCase();
   
   if (name.includes('burger') || name.includes('hamburger')) {
-    return 'https://images.unsplash.com/photo-1568901346375-23c9450c58de?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('pizza')) {
-    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('sandwich') || name.includes('sub')) {
-    return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('coffee') || name.includes('cappuccino') || name.includes('espresso')) {
-    return 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('tea') || name.includes('chai')) {
-    return 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cda9?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cda9?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('fries') || name.includes('french fries')) {
-    return 'https://images.unsplash.com/photo-1576107232684-1279f3d1a40d?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1576107232684-1279f3d1a40d?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('drink') || name.includes('juice') || name.includes('cold drink')) {
-    return 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('biryani') || name.includes('rice')) {
-    return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('noodles') || name.includes('pasta')) {
-    return 'https://images.unsplash.com/photo-1563379091339-03246922d5ea?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1563379091339-03246922d5ea?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('soup')) {
-    return 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('salad')) {
-    return 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('cake') || name.includes('dessert')) {
-    return 'https://images.unsplash.com/photo-1578985545062-69928f1f3930?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1578985545062-69928f1f3930?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('ice cream') || name.includes('icecream')) {
-    return 'https://images.unsplash.com/photo-1488900128323-21503983a07e?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1488900128323-21503983a07e?q=80&w=400&h=300&fit=crop';
   } else if (name.includes('breakfast') || name.includes('pancake') || name.includes('waffle')) {
-    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=400&h=300&fit=crop';
   } else {
     // Default food image for other items
-    return 'https://images.unsplash.com/photo-1504674900249-08745da9b8e9?w=400&h=300&fit=crop';
+    return 'https://images.unsplash.com/photo-1504674900249-08745da9b8e9?q=80&w=400&h=300&fit=crop';
   }
 };
 
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#c09a7eff',
+    backgroundColor: '#fff',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#E5E7EB',

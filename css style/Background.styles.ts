@@ -21,8 +21,7 @@ export const backgroundOptions = {
   
   // Option 2: Modern gradient theme
   modern: {
-    backgroundColor: '#c8b7acff',
-    image: require('../frontend/assets/coffeebeans.png'),
+    backgroundColor: '#fff',
     imageOpacity: 0.45,
   },
   
@@ -61,7 +60,14 @@ export const backgroundOptions = {
     imageOpacity: 0.1,
   },
   
-  // Option 8: Dark theme
+  // Option 8: Coffee cups theme for whole banner
+  coffeeCups: {
+    backgroundColor: '#c09a7eff',
+    image: require('../frontend/assets/coffeebeans.png'),
+    imageOpacity: 1,
+  },
+  
+  // Option 9: Dark theme
   dark: {
     backgroundColor: '#2c3e50',
     image: require('../frontend/assets/doodles.png'),

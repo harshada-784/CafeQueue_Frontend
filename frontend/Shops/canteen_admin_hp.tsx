@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import Background from '../Background';
 import Login from '../Login';
 import CanteenAdminAddItem from './canteen_admin_add_item';
@@ -67,7 +67,7 @@ export default function CanteenAdminHP({ userName = 'User', currentUsername = ''
   return (
     <Background theme="modern">
       <View style={styles.container}>
-        {/* Header */}
+        {/* Header - Static */}
         <Header
           displayName={displayName}
           showProfileMenu={showProfileMenu}
@@ -75,48 +75,50 @@ export default function CanteenAdminHP({ userName = 'User', currentUsername = ''
           setLogout={setLogout}
         />
 
-        {/* Content based on active tab */}
-        {activeTab === 'menu' && (
-          <MenuContent
-            items={items}
-            menuSearch={menuSearch}
-            setMenuSearch={setMenuSearch}
-            setShowAddItem={setShowAddItem}
-            setEditId={setEditId}
-            setShowEditItem={setShowEditItem}
-            setAvailable={setAvailable}
-            deleteItem={deleteItem}
-          />
-        )}
+        {/* Scrollable Content */}
+        <ScrollView style={styles.scrollableContent} showsVerticalScrollIndicator={false}>
+          {activeTab === 'menu' && (
+            <MenuContent
+              items={items}
+              menuSearch={menuSearch}
+              setMenuSearch={setMenuSearch}
+              setShowAddItem={setShowAddItem}
+              setEditId={setEditId}
+              setShowEditItem={setShowEditItem}
+              setAvailable={setAvailable}
+              deleteItem={deleteItem}
+            />
+          )}
 
-        {activeTab === 'orders' && (
-          <OrdersContent
-            ordersTab={ordersTab}
-            setOrdersTab={setOrdersTab}
-            allOrders={allOrders}
-          />
-        )}
+          {activeTab === 'orders' && (
+            <OrdersContent
+              ordersTab={ordersTab}
+              setOrdersTab={setOrdersTab}
+              allOrders={allOrders}
+            />
+          )}
 
-        {activeTab === 'analytics' && <AnalyticsContent />}
+          {activeTab === 'analytics' && <AnalyticsContent />}
 
-        {activeTab === 'profile' && (
-          <ProfileContent
-            profileName={profileName}
-            setProfileName={setProfileName}
-            profileUsername={profileUsername}
-            setProfileUsername={setProfileUsername}
-            profilePhoto={profilePhoto}
-            profilePhotoError={profilePhotoError}
-          />
-        )}
+          {activeTab === 'profile' && (
+            <ProfileContent
+              profileName={profileName}
+              setProfileName={setProfileName}
+              profileUsername={profileUsername}
+              setProfileUsername={setProfileUsername}
+              profilePhoto={profilePhoto}
+              profilePhotoError={profilePhotoError}
+            />
+          )}
 
-        {activeTab === 'shop_card' && (
-          <ShopCardContent
-            displayName={displayName}
-          />
-        )}
+          {activeTab === 'shop_card' && (
+            <ShopCardContent
+              displayName={displayName}
+            />
+          )}
+        </ScrollView>
 
-        {/* Footer Navigation */}
+        {/* Footer Navigation - Static */}
         <FooterNavigation
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -129,7 +131,9 @@ export default function CanteenAdminHP({ userName = 'User', currentUsername = ''
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+  },
+  scrollableContent: {
+    flex: 1,
     paddingHorizontal: 20,
   },
 });

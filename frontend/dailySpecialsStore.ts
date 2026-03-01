@@ -9,7 +9,7 @@ export type SpecialItem = {
 
 let nextId = 4;
 let items: SpecialItem[] = [
-  { id: 1, name: 'Vadapav', price: 20, available: true },
+  { id: 1, name: 'Burger', price: 20, available: true },
   { id: 2, name: 'Sandwich', price: 20, available: true },
   { id: 3, name: 'Juice', price: 20, available: false },
 ];
