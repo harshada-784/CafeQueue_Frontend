@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View } from 'react-native';
-import Signup from './frontend/Signup'; // Start with Signup, you can switch to Login for testing
+import LandingPage from './frontend/LandingPage';
+import Signup from './frontend/Signup';
 
 export default function App() {
+  const [showSignup, setShowSignup] = useState(false);
+
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }}>
-        <Signup />
+        {showSignup ? (
+          <Signup />
+        ) : (
+          <LandingPage onGetStarted={() => setShowSignup(true)} />
+        )}
       </View>
     </SafeAreaProvider>
   );

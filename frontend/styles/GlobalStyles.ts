@@ -85,6 +85,14 @@ export const GlobalStyles = StyleSheet.create({
     fontWeight: '500',
     color: '#3b82f6',
   },
+
+  // App name style
+  appName: {
+    fontFamily: GLOBAL_FONT_FAMILY,
+    fontSize: 42,
+    color: '#222',
+    letterSpacing: 1,
+  },
 });
 
 // Helper function to apply global font to any style
