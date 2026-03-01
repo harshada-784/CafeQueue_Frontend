@@ -1,8 +1,45 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView, Image, Switch, Alert, StyleSheet, Platform } from 'react-native';
-import { launchImageLibrary, ImagePickerResponse, MediaType } from 'react-native-image-picker';
+import React from 'react';
+import { View, TouchableOpacity, ScrollView, Image, Switch, Alert, StyleSheet } from 'react-native';
 import { SpecialItem } from '../../dailySpecialsStore';
 import { Text, TextInput } from '../../components/GlobalComponents';
+
+// Function to get online food image based on item name
+const getFoodImage = (itemName: string) => {
+  const name = itemName.toLowerCase();
+  
+  if (name.includes('burger') || name.includes('hamburger')) {
+    return 'https://images.unsplash.com/photo-1568901346375-23c9450c58de?w=400&h=300&fit=crop';
+  } else if (name.includes('pizza')) {
+    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop';
+  } else if (name.includes('sandwich') || name.includes('sub')) {
+    return 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop';
+  } else if (name.includes('coffee') || name.includes('cappuccino') || name.includes('espresso')) {
+    return 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop';
+  } else if (name.includes('tea') || name.includes('chai')) {
+    return 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cda9?w=400&h=300&fit=crop';
+  } else if (name.includes('fries') || name.includes('french fries')) {
+    return 'https://images.unsplash.com/photo-1576107232684-1279f3d1a40d?w=400&h=300&fit=crop';
+  } else if (name.includes('drink') || name.includes('juice') || name.includes('cold drink')) {
+    return 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop';
+  } else if (name.includes('biryani') || name.includes('rice')) {
+    return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=300&fit=crop';
+  } else if (name.includes('noodles') || name.includes('pasta')) {
+    return 'https://images.unsplash.com/photo-1563379091339-03246922d5ea?w=400&h=300&fit=crop';
+  } else if (name.includes('soup')) {
+    return 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop';
+  } else if (name.includes('salad')) {
+    return 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop';
+  } else if (name.includes('cake') || name.includes('dessert')) {
+    return 'https://images.unsplash.com/photo-1578985545062-69928f1f3930?w=400&h=300&fit=crop';
+  } else if (name.includes('ice cream') || name.includes('icecream')) {
+    return 'https://images.unsplash.com/photo-1488900128323-21503983a07e?w=400&h=300&fit=crop';
+  } else if (name.includes('breakfast') || name.includes('pancake') || name.includes('waffle')) {
+    return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop';
+  } else {
+    // Default food image for other items
+    return 'https://images.unsplash.com/photo-1504674900249-08745da9b8e9?w=400&h=300&fit=crop';
+  }
+};
 
 interface MenuContentProps {
   items: SpecialItem[];
@@ -25,41 +62,6 @@ export default function MenuContent({
   setAvailable, 
   deleteItem 
 }: MenuContentProps) {
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
-
-  const handleImagePicker = (itemId: number) => {
-    setSelectedItemId(itemId);
-    
-    const options = {
-      mediaType: 'photo' as MediaType,
-      includeBase64: false,
-      maxHeight: 2000,
-      maxWidth: 2000,
-      quality: 0.8 as any,
-    };
-
-    launchImageLibrary(options, (response: ImagePickerResponse) => {
-      if (response.didCancel || response.errorMessage) {
-        setSelectedItemId(null);
-        return;
-      }
-
-      if (response.assets && response.assets[0]) {
-        const imageUri = response.assets[0].uri;
-        if (imageUri) {
-          // Here you would typically update the item's image in your store
-          // For now, we'll just show an alert
-          Alert.alert(
-            'Image Selected',
-            `Image selected for item ${itemId}. You would need to implement the update logic in your store.`,
-            [{ text: 'OK' }]
-          );
-        }
-      }
-      setSelectedItemId(null);
-    });
-  };
-
   const filteredItems = items.filter(i => i.name.toLowerCase().includes(menuSearch.trim().toLowerCase()));
 
   return (
@@ -128,33 +130,20 @@ export default function MenuContent({
           filteredItems.map(item => (
             <View key={item.id} style={styles.menuCardNew}>
               {/* Item Image */}
-              <View style={styles.imageContainer}>
-                {item.imageUri?.trim() ? (
-                  <View>
-                    <Image
-                      source={{ uri: item.imageUri.trim() }}
-                      style={styles.itemImageNew}
-                      resizeMode="cover"
-                    />
-                    <TouchableOpacity 
-                      style={styles.changeImageBtn}
-                      onPress={() => handleImagePicker(item.id)}
-                    >
-                      <Text style={styles.changeImageBtnText}>📷 Change</Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <View style={styles.itemImagePlaceholder}>
-                    <Text style={styles.itemImagePlaceholderIcon}>🍴</Text>
-                    <TouchableOpacity 
-                      style={styles.addImageBtn}
-                      onPress={() => handleImagePicker(item.id)}
-                    >
-                      <Text style={styles.addImageBtnText}>📷 Add Image</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
+              {item.imageUri?.trim() ? (
+                <Image
+                  source={{ uri: item.imageUri.trim() }}
+                  style={styles.itemImageNew}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image
+                  source={{ uri: getFoodImage(item.name) }}
+                  style={styles.itemImageNew}
+                  resizeMode="cover"
+                  defaultSource={require('../../assets/food_home_user.png')}
+                />
+              )}
               
               {/* Item Content */}
               <View style={styles.itemContent}>
@@ -233,8 +222,8 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     fontSize: 28,
-    fontWeight: '200',
-    color: '#111',
+    fontWeight: '100',
+    color: '#4a1e0c86',
   },
   addNewItemBtn: {
     backgroundColor: '#4a1e0cf7',
@@ -351,7 +340,7 @@ const styles = StyleSheet.create({
   },
   itemImageNew: {
     width: '100%',
-    height: 60,
+    height: 160,
     backgroundColor: '#F3F4F6',
   },
   itemImagePlaceholder: {
@@ -445,34 +434,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#666',
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-  changeImageBtn: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  changeImageBtnText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  addImageBtn: {
-    backgroundColor: '#FF9800',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  addImageBtnText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
   },
 });

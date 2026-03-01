@@ -16,14 +16,14 @@ export const backgroundOptions = {
   coffee: {
     backgroundColor: '#c09a7eff',
     image: require('../frontend/assets/coffeebeans.png'),
-    imageOpacity: 0.15,
+    imageOpacity: 0.3,
   },
   
   // Option 2: Modern gradient theme
   modern: {
-    backgroundColor: '#fff',
+    backgroundColor: '#c8b7acff',
     image: require('../frontend/assets/coffeebeans.png'),
-    imageOpacity: 0.28,
+    imageOpacity: 0.45,
   },
   
   // Option 3: Food theme

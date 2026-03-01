@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   ordersTabs: {
     flexDirection: 'row',
     marginBottom: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#c09a7eff',
     borderRadius: 25,
     padding: 4,
     gap: 2,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   orderTabActive: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#412920',
   },
   orderTabText: {
     fontSize: 14,

@@ -66,11 +66,6 @@ const styles = StyleSheet.create({
     borderColor: '#e5e5e5',
     paddingVertical: 6,
     minWidth: 140,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
     zIndex: 3000,
   },
   profileMenuItem: {
@@ -101,6 +96,6 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     color: '#111',
-    fontWeight: '800',
+    fontWeight: '100',
   },
 });
