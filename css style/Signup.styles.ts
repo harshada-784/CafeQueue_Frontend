@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   linkText: { color: '#007BFF', marginTop: 10 },
-  guestLinkText: { color: '#666', marginTop: 15, fontSize: 14, textDecorationLine: 'underline' },
+  guestLinkText: { color: '#02356aff', marginTop: 15, fontSize: 16, textDecorationLine: 'underline' },
   errorText: { color: 'red', alignSelf: 'flex-start', marginTop: -10, marginBottom: 10, marginLeft: 10 },
   inputError: {
     borderColor: 'red',

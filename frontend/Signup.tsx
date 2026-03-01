@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
-import { Text, TextInput, Button, Title, Heading } from './components/GlobalComponents';
-import Background from './Background';
 import CanteenAdminHP from './Shops/canteen_admin_hp';
 import CanteenAdminOfficeHP from './College Admin/CollegeAdminOfficeHP';
 import Login from './Login';
 import { isUsernameTaken, addUsername } from './userStore';
 import UserHome from './Customer/UserHome';
-import { styles } from '../css style/Signup.styles';
+import Signup1 from './Signup1';
+import Signup2 from './Signup2';
 
 export default function Signup() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirm_password, setConfirmPassword] = useState('');
-  const [userType, setUserType] = useState('Select usertype'); //dropdown
-  const [showDropdown, setShowDropdown] = useState(false); //dropdown visibility
-  const [showLogin, setShowLogin] = useState(false); //connect between signup/login
+  const [userType, setUserType] = useState('Select usertype');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [showAdminHome, setShowAdminHome] = useState(false);
   const [collegeName, setCollegeName] = useState('Select college');
   const [showCollegeDropdown, setShowCollegeDropdown] = useState(false);
@@ -29,24 +27,23 @@ export default function Signup() {
   const [studentCardId, setStudentCardId] = useState('');
   const [shopId, setShopId] = useState('');
 
-  // New state for admin office verification flow
-  const [adminStep, setAdminStep] = useState<'email_college' | 'verify_email' | 'otp_verify' | 'final_fields'>('email_college');
+  // Admin office verification flow
+  const [adminStep, setAdminStep] = useState<'email_college' | 'otp_verify' | 'final_fields'>('email_college');
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
 
+  // Step control
+  const [currentStep, setCurrentStep] = useState(1);
 
-  if (showLogin) return <Login />; // show login page if toggled
+  if (showLogin) return <Login />;
   if (showAdminHome) return <CanteenAdminHP userName={username || 'User'} />;
   if (showAdminOfficeHome) return <CanteenAdminOfficeHP userName={username || 'User'} collegeName={collegeName} />;
   if (showUserHome) return <UserHome userName={username || 'User'} collegeName={collegeName} />;
 
-  const handleDropdownSelect = (value: string, label: string) => {
-    // Close any open dropdowns first to avoid visual clashes
-    setShowDropdown(false);
-    setShowCollegeDropdown(false);
+  const handleDropdownSelect = (label: string) => {
     setUserType(label);
-    // Reset college selection whenever user type changes
+    setShowDropdown(false);
+    // Reset states based on user type
     if (label === 'Student/Staff') {
       setCollegeName('Select college');
       setStudentCardId('');
@@ -57,42 +54,29 @@ export default function Signup() {
       setCollegeName('');
       setOfficeEmail('');
       setOfficeOtp('');
-      // Reset admin verification state
       setAdminStep('email_college');
       setIsVerifyingEmail(false);
       setIsVerifyingOtp(false);
-      setEmailVerified(false);
     }
   };
 
-  const handleCollegeSelect = (label: string) => {
-    setCollegeName(label);
+  const handleCollegeSelect = (selectedCollege: string) => {
+    setCollegeName(selectedCollege);
     setShowCollegeDropdown(false);
   };
 
   const handleVerifyEmail = async () => {
-    if (!officeEmail.trim() || !collegeName.trim()) {
-      return;
-    }
-
+    if (!officeEmail.trim() || !collegeName.trim()) return;
     setIsVerifyingEmail(true);
-
-    // Simulate email verification API call
     setTimeout(() => {
       setIsVerifyingEmail(false);
-      setEmailVerified(true);
       setAdminStep('otp_verify');
     }, 2000);
   };
 
   const handleVerifyOtp = async () => {
-    if (!officeOtp.trim()) {
-      return;
-    }
-
+    if (!officeOtp.trim()) return;
     setIsVerifyingOtp(true);
-
-    // Simulate OTP verification API call
     setTimeout(() => {
       setIsVerifyingOtp(false);
       setAdminStep('final_fields');
@@ -113,421 +97,101 @@ export default function Signup() {
       setPasswordError('Passwords do not match');
       return;
     }
-    setPasswordError(''); // Clear password error if they match
-    // Temporary routing: if canteen admin selected, go to admin home
+    setPasswordError('');
     addUsername(trimmed);
+
     if (userType === 'Canteen Shop') {
       setShowAdminHome(true);
       return;
     }
     if (userType === 'Canteen Admin Office') {
-      // Require college selection for admin office
-      if (!collegeName || collegeName === 'Select college') {
-        return;
-      }
+      if (!collegeName || collegeName === 'Select college') return;
       setShowAdminOfficeHome(true);
       return;
     }
     if (userType === 'Student/Staff') {
-      // Require a college selection
-      if (!collegeName || collegeName === 'Select college') {
-        return;
-      }
+      if (!collegeName || collegeName === 'Select college') return;
       setShowUserHome(true);
       return;
     }
   };
 
   const handleGuestContinue = () => {
-    // Navigate to user home as guest
     setUsername('Guest');
     setShowUserHome(true);
   };
 
+  const handleContinueFromStep1 = () => {
+    if (userType !== 'Select usertype') {
+      setCurrentStep(2);
+    }
+  };
+
+  const closeDropdowns = () => {
+    setShowDropdown(false);
+    setShowCollegeDropdown(false);
+  };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+    if (!showDropdown) setShowCollegeDropdown(false);
+  };
+
+  const toggleCollegeDropdown = () => {
+    setShowCollegeDropdown(!showCollegeDropdown);
+    if (!showCollegeDropdown) setShowDropdown(false);
+  };
+
+  // Render Signup1 for step 1
+  if (currentStep === 1) {
+    return (
+      <Signup1
+        userType={userType}
+        showDropdown={showDropdown}
+        onUserTypeChange={handleDropdownSelect}
+        onToggleDropdown={toggleDropdown}
+        onCloseDropdowns={closeDropdowns}
+        onContinue={handleContinueFromStep1}
+        onGoToLogin={() => setShowLogin(true)}
+        onGuestContinue={handleGuestContinue}
+      />
+    );
+  }
+
+  // Render Signup2 for step 2
   return (
-    <Background>
-    <View style={styles.container}>
-      {/* App Logo and Name */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={ require('./assets/logo.png') }
-          style={styles.logoImage}
-          resizeMode="contain"
-        />
-        <Text style={styles.appName}>CafeQueue</Text>
-      </View>
-      {(showDropdown || showCollegeDropdown) && (
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.backdrop}
-          onPress={() => {
-            setShowDropdown(false);
-            setShowCollegeDropdown(false);
-          }}
-        />
-      )}
-      <Text style={styles.title}>Signup</Text>
-
-      {/* Custom Dropdown */}
-      <View style={[styles.dropdownContainer, showDropdown && styles.dropdownContainerActive]}>
-        <TouchableOpacity 
-          style={styles.dropdownButton} 
-          onPress={() => {
-            const next = !showDropdown;
-            // When opening user type dropdown, ensure college dropdown is closed
-            if (next) setShowCollegeDropdown(false);
-            setShowDropdown(next);
-          }}
-        >
-          <Text style={[styles.dropdownButtonText, userType === 'Select usertype' && styles.placeholderText]}>
-            {userType}
-          </Text>
-          <Text style={styles.dropdownArrow}>{showDropdown ? '▲' : '▼'}</Text>
-        </TouchableOpacity>
-        
-        {showDropdown && (
-          <View style={[styles.dropdownList, styles.dropdownListActive]}>
-            <TouchableOpacity 
-              style={styles.dropdownItem} 
-              onPress={() => handleDropdownSelect('student_staff', 'Student/Staff')}
-            >
-              <Text style={styles.dropdownItemText}>Student/Staff</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.dropdownItem} 
-              onPress={() => handleDropdownSelect('canteen_shop', 'Canteen Shop')}
-            >
-              <Text style={styles.dropdownItemText}>Canteen Shop</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.dropdownItem} 
-              onPress={() => handleDropdownSelect('canteen_admin_office', 'Canteen Admin Office')}
-            >
-              <Text style={styles.dropdownItemText}>Canteen Admin Office</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
-      {userType === 'Select usertype' && (
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Student/Staff Flow */}
-      {userType === 'Student/Staff' && (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={(t) => {
-              setUsername(t);
-              if (usernameError) setUsernameError('');
-            }}
-          />
-          {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
-
-          {/* College selection for Student/Staff */}
-          <View style={[styles.dropdownContainer, showCollegeDropdown && styles.dropdownContainerActive]}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={() => {
-                const next = !showCollegeDropdown;
-                if (next) setShowDropdown(false);
-                setShowCollegeDropdown(next);
-              }}
-            >
-              <Text
-                style={[
-                  styles.dropdownButtonText,
-                  collegeName === 'Select college' && styles.placeholderText,
-                ]}
-              >
-                {collegeName}
-              </Text>
-              <Text style={styles.dropdownArrow}>
-                {showCollegeDropdown ? '▲' : '▼'}
-              </Text>
-            </TouchableOpacity>
-
-            {showCollegeDropdown && (
-              <View style={[styles.dropdownList, styles.dropdownListActive]}>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('Bharati Vidyapeeth')}
-                >
-                  <Text style={styles.dropdownItemText}>Bharati Vidyapeeth</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('State Engineering College')}
-                >
-                  <Text style={styles.dropdownItemText}>State Engineering College</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('City Science University')}
-                >
-                  <Text style={styles.dropdownItemText}>City Science University</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('Lakeside Arts College')}
-                >
-                  <Text style={styles.dropdownItemText}>Lakeside Arts College</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Enter E-Canteen Card ID"
-            value={studentCardId}
-            onChangeText={setStudentCardId}
-          />
-
-          <TextInput
-            style={[styles.input, passwordError ? styles.inputError : null]}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (passwordError) setPasswordError('');
-            }}
-          />
-          <TextInput
-            style={[styles.input, passwordError ? styles.inputError : null]}
-            placeholder="Confirm Password"
-            secureTextEntry
-            value={confirm_password}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              if (passwordError) setPasswordError('');
-            }}
-          />
-          {!!passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
-
-          <TouchableOpacity style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setShowLogin(true)}>
-            <Text style={styles.linkText}>Already have an account? Login</Text>
-          </TouchableOpacity>
-        </>
-      )}
-
-      {/* Canteen Shop Flow */}
-      {userType === 'Canteen Shop' && (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={(t) => {
-              setUsername(t);
-              if (usernameError) setUsernameError('');
-            }}
-          />
-          {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
-
-          {/* College selection for Canteen Shop */}
-          <View style={[styles.dropdownContainer, showCollegeDropdown && styles.dropdownContainerActive]}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={() => {
-                const next = !showCollegeDropdown;
-                if (next) setShowDropdown(false);
-                setShowCollegeDropdown(next);
-              }}
-            >
-              <Text
-                style={[
-                  styles.dropdownButtonText,
-                  collegeName === 'Select college' && styles.placeholderText,
-                ]}
-              >
-                {collegeName}
-              </Text>
-              <Text style={styles.dropdownArrow}>
-                {showCollegeDropdown ? '▲' : '▼'}
-              </Text>
-            </TouchableOpacity>
-
-            {showCollegeDropdown && (
-              <View style={[styles.dropdownList, styles.dropdownListActive]}>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('Bharati Vidyapeeth')}
-                >
-                  <Text style={styles.dropdownItemText}>Bharati Vidyapeeth</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('State Engineering College')}
-                >
-                  <Text style={styles.dropdownItemText}>State Engineering College</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('City Science University')}
-                >
-                  <Text style={styles.dropdownItemText}>City Science University</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => handleCollegeSelect('Lakeside Arts College')}
-                >
-                  <Text style={styles.dropdownItemText}>Lakeside Arts College</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Enter E-Canteen Shop ID"
-            value={shopId}
-            onChangeText={setShopId}
-          />
-
-          <TextInput
-            style={[styles.input, passwordError ? styles.inputError : null]}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              if (passwordError) setPasswordError('');
-            }}
-          />
-          <TextInput
-            style={[styles.input, passwordError ? styles.inputError : null]}
-            placeholder="Confirm Password"
-            secureTextEntry
-            value={confirm_password}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              if (passwordError) setPasswordError('');
-            }}
-          />
-          {!!passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
-
-          <TouchableOpacity style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setShowLogin(true)}>
-            <Text style={styles.linkText}>Already have an account? Login</Text>
-          </TouchableOpacity>
-        </>
-      )}
-
-      {/* Canteen Admin Office Flow */}
-      {userType === 'Canteen Admin Office' && (
-        <>
-          {adminStep === 'email_college' && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter College Name"
-                value={collegeName}
-                onChangeText={setCollegeName}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Email"
-                value={officeEmail}
-                onChangeText={setOfficeEmail}
-                keyboardType="email-address"
-              />
-              <TouchableOpacity
-                style={[styles.button, (!officeEmail.trim() || !collegeName.trim()) && styles.buttonDisabled]}
-                onPress={handleVerifyEmail}
-                disabled={!officeEmail.trim() || !collegeName.trim() || isVerifyingEmail}
-              >
-                <Text style={styles.buttonText}>
-                  {isVerifyingEmail ? 'Verifying Email...' : 'Verify Email'}
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-
-          {adminStep === 'otp_verify' && (
-            <>
-              <Text style={styles.infoText}>Enter the OTP sent to {officeEmail}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter OTP"
-                value={officeOtp}
-                onChangeText={setOfficeOtp}
-                keyboardType="number-pad"
-                maxLength={6}
-              />
-              <TouchableOpacity
-                style={[styles.button, !officeOtp.trim() && styles.buttonDisabled]}
-                onPress={handleVerifyOtp}
-                disabled={!officeOtp.trim() || isVerifyingOtp}
-              >
-                <Text style={styles.buttonText}>
-                  {isVerifyingOtp ? 'Verifying College...' : 'Verify College'}
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-
-          {adminStep === 'final_fields' && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={(t) => {
-                  setUsername(t);
-                  if (usernameError) setUsernameError('');
-                }}
-              />
-              {!!usernameError && <Text style={styles.errorText}>{usernameError}</Text>}
-
-              <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (passwordError) setPasswordError('');
-                }}
-              />
-              <TextInput
-                style={[styles.input, passwordError ? styles.inputError : null]}
-                placeholder="Confirm Password"
-                secureTextEntry
-                value={confirm_password}
-                onChangeText={(text) => {
-                  setConfirmPassword(text);
-                  if (passwordError) setPasswordError('');
-                }}
-              />
-              {!!passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
-
-              <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                <Text style={styles.buttonText}>Complete Signup</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleGuestContinue}>
-                <Text style={styles.guestLinkText}>Continue as guest</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </>
-      )}
-    </View>
-    </Background>
+    <Signup2
+      userType={userType}
+      username={username}
+      setUsername={setUsername}
+      password={password}
+      setPassword={setPassword}
+      confirm_password={confirm_password}
+      setConfirmPassword={setConfirmPassword}
+      collegeName={collegeName}
+      setCollegeName={setCollegeName}
+      studentCardId={studentCardId}
+      setStudentCardId={setStudentCardId}
+      shopId={shopId}
+      setShopId={setShopId}
+      officeEmail={officeEmail}
+      setOfficeEmail={setOfficeEmail}
+      officeOtp={officeOtp}
+      setOfficeOtp={setOfficeOtp}
+      adminStep={adminStep}
+      isVerifyingEmail={isVerifyingEmail}
+      isVerifyingOtp={isVerifyingOtp}
+      usernameError={usernameError}
+      passwordError={passwordError}
+      showCollegeDropdown={showCollegeDropdown}
+      onToggleCollegeDropdown={toggleCollegeDropdown}
+      onCloseDropdowns={closeDropdowns}
+      onCollegeSelect={handleCollegeSelect}
+      onHandleSignup={handleSignup}
+      onVerifyEmail={handleVerifyEmail}
+      onVerifyOtp={handleVerifyOtp}
+      onGoToLogin={() => setShowLogin(true)}
+      onSetAdminStep={setAdminStep}
+    />
   );
 }
-
