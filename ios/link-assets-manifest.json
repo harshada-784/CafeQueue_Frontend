@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/font/BpmfIansui-Regular.ttf",
+      "sha1": "f5e0803ab321d5e7f2d55993a5fe52b6b79ed668"
+    },
+    {
+      "path": "assets/font/BpmfZihiKaiStd-Regular.ttf",
+      "sha1": "6f815c1d195eeee29ff65f13d9f75f1a05204288"
+    },
+    {
+      "path": "assets/font/PlaypenSansThai-VariableFont_wght.ttf",
+      "sha1": "4a80b2104c1204abb1615f2ec94114aac124b9db"
+    }
+  ]
+}
