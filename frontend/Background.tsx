@@ -9,7 +9,7 @@ interface BackgroundProps extends PropsWithChildren {
 export default function Background({ children, theme = 'coffee' }: BackgroundProps) {
   const selectedTheme = backgroundOptions[theme];
   
-  if (selectedTheme.image) {
+  if ('image' in selectedTheme && selectedTheme.image) {
     return (
       <ImageBackground
         source={selectedTheme.image}
