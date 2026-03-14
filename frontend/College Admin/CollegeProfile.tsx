@@ -42,184 +42,192 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
 
   return (
     <View style={styles.formContainer}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRightPlaceholder} />
-      </View>
-
       <Text style={styles.formTitle}>College Profile</Text>
 
+      {/* College Overview Card */}
       <View style={styles.profileSection}>
         <View style={styles.profileHeader}>
-          <View style={styles.profileImage}>
-            <Text style={{ fontSize: 32, color: '#666' }}>🏫</Text>
+          <View style={styles.profileImageContainer}>
+            <Text style={{ fontSize: 48, color: '#c09a7e' }}>🏫</Text>
           </View>
           <View style={styles.profileInfo}>
             {editMode ? (
               <TextInput
-                style={[styles.profileName, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8 }]}
+                style={[styles.profileName, { borderWidth: 2, borderColor: '#c09a7e', borderRadius: 8, paddingHorizontal: 12, backgroundColor: '#fff' }]}
                 value={editedProfile.name}
                 onChangeText={(text) => setEditedProfile({ ...editedProfile, name: text })}
                 placeholder="College Name"
               />
             ) : (
-              <Text style={styles.profileName}>{editedProfile.name}</Text>
+              <Text style={styles.profileName}>{editedProfile.name || 'College Name'}</Text>
             )}
             <Text style={styles.profileType}>Educational Institution</Text>
-          </View>
-        </View>
-
-        <View style={styles.profileDetails}>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Address:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.address}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, address: text })}
-                placeholder="Address"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.address}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>City:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.city}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, city: text })}
-                placeholder="City"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.city}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>State:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.state}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, state: text })}
-                placeholder="State"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.state}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Pincode:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.pincode}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, pincode: text })}
-                placeholder="Pincode"
-                keyboardType="numeric"
-                maxLength={6}
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.pincode}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Phone:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.phone}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, phone: text })}
-                placeholder="Phone Number"
-                keyboardType="phone-pad"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.phone}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Email:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.email}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, email: text })}
-                placeholder="Email"
-                keyboardType="email-address"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.email}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Website:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.website}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, website: text })}
-                placeholder="Website"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.website}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Established:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.establishedYear}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, establishedYear: text })}
-                placeholder="Year"
-                keyboardType="numeric"
-                maxLength={4}
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.establishedYear}</Text>
-            )}
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Total Students:</Text>
-            {editMode ? (
-              <TextInput
-                style={[styles.detailValue, { borderWidth: 1, borderColor: '#ccc', borderRadius: 4, paddingHorizontal: 8, flex: 1 }]}
-                value={editedProfile.totalStudents}
-                onChangeText={(text) => setEditedProfile({ ...editedProfile, totalStudents: text })}
-                placeholder="Number of Students"
-                keyboardType="numeric"
-              />
-            ) : (
-              <Text style={styles.detailValue}>{editedProfile.totalStudents}</Text>
-            )}
+            
+            {/* Quick Stats */}
+            <View style={styles.quickStats}>
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{editedProfile.totalStudents || '0'}</Text>
+                <Text style={styles.statLabel}>Students</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statNumber}>{editedProfile.establishedYear || 'N/A'}</Text>
+                <Text style={styles.statLabel}>Since</Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+      {/* Contact Information */}
+      <View style={styles.profileSection}>
+        <Text style={styles.sectionTitle}>📞 Contact Information</Text>
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>📍</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Address</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.address}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, address: text })}
+                  placeholder="Enter address"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.address || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>🏙️</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>City</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.city}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, city: text })}
+                  placeholder="Enter city"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.city || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>🌍</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>State</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.state}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, state: text })}
+                  placeholder="Enter state"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.state || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>📮</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Pincode</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.pincode}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, pincode: text })}
+                  placeholder="Enter pincode"
+                  keyboardType="numeric"
+                  maxLength={6}
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.pincode || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Digital Presence */}
+      <View style={styles.profileSection}>
+        <Text style={styles.sectionTitle}>🌐 Digital Presence</Text>
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>📞</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Phone</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.phone}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, phone: text })}
+                  placeholder="Enter phone"
+                  keyboardType="phone-pad"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.phone || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>📧</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Email</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.email}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, email: text })}
+                  placeholder="Enter email"
+                  keyboardType="email-address"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.email || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoIcon}>🌐</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Website</Text>
+              {editMode ? (
+                <TextInput
+                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  value={editedProfile.website}
+                  onChangeText={(text) => setEditedProfile({ ...editedProfile, website: text })}
+                  placeholder="Enter website"
+                />
+              ) : (
+                <Text style={styles.infoValue}>{editedProfile.website || 'Not set'}</Text>
+              )}
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Action Buttons */}
+      <View style={styles.actionContainer}>
         {editMode ? (
-          <>
-            <TouchableOpacity style={[styles.button, { backgroundColor: '#4CAF50', flex: 1 }]} onPress={handleSave}>
-              <Text style={styles.buttonText}>Save</Text>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={[styles.actionButton, styles.saveButton]} onPress={handleSave}>
+              <Text style={styles.actionButtonText}>💾 Save Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, { backgroundColor: '#F44336', flex: 1 }]} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Cancel</Text>
+            <TouchableOpacity style={[styles.actionButton, styles.cancelButton]} onPress={handleCancel}>
+              <Text style={styles.actionButtonText}>❌ Cancel</Text>
             </TouchableOpacity>
-          </>
+          </View>
         ) : (
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#2196F3' }]} onPress={() => setEditMode(true)}>
-            <Text style={styles.buttonText}>Edit Profile</Text>
+          <TouchableOpacity style={[styles.actionButton, styles.editButton]} onPress={() => setEditMode(true)}>
+            <Text style={styles.actionButtonText}>✏️ Edit Profile</Text>
           </TouchableOpacity>
         )}
       </View>

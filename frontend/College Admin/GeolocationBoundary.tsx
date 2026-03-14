@@ -80,13 +80,6 @@ export default function GeolocationBoundary({ onBack, onSave, initialBoundary = 
 
   return (
     <View style={styles.formContainer}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerRightPlaceholder} />
-      </View>
-
       <Text style={styles.formTitle}>Geolocation Boundaries</Text>
 
       <View style={styles.mapContainer}>

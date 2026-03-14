@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Platform, Image, Alert } from 'react-native';
+import { View, TouchableOpacity, Image, Alert } from 'react-native';
 import { Text } from '../components/GlobalComponents';
 import Background from '../Background';
 import Login from '../Login';
@@ -7,6 +7,7 @@ import ShopCard from '../Shops/ShopCard';
 import CollegeProfile from './CollegeProfile';
 import GeolocationBoundary from './GeolocationBoundary';
 import ShopManagement from './ShopManagement';
+import FloatingHeader from './FloatingHeader';
 import { styles } from '../../css style/CollegeAdminOfficeHP.styles';
 
 interface Props {
@@ -45,10 +46,10 @@ interface BoundaryPoint {
   longitude: number;
 }
 
-function CollegeAdminOfficeHP({ userName = 'User', collegeName = 'College' }: Props) {
+function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: Props) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [logout, setLogout] = useState(false);
-  const [currentView, setCurrentView] = useState<'main' | 'profile' | 'boundary' | 'shops' | 'shopCard'>('main');
+  const [currentView, setCurrentView] = useState<'profile' | 'boundary' | 'shops' | 'shopCard'>('profile');
 
   // State management
   const [shops, setShops] = useState<Shop[]>([]);
@@ -125,121 +126,74 @@ function CollegeAdminOfficeHP({ userName = 'User', collegeName = 'College' }: Pr
     setCurrentView('shopCard');
   };
 
+  const handleLogout = () => {
+    setLogout(true);
+    setShowProfileMenu(false);
+  };
+
+  const handleCloseProfileMenu = () => {
+    setShowProfileMenu(false);
+  };
+
   if (logout) return <Login />;
 
   // Shop Card View
   if (currentView === 'shopCard' && selectedShop) {
     return (
-      <ShopCard
-        onBack={() => setCurrentView('main')}
-        userName={selectedShop.ownerName}
-        shopId={selectedShop.shopId}
-      />
+      <Background>
+        <FloatingHeader
+          userName={userName}
+          collegeName={collegeName}
+          activeTab="profileMenu"
+          onProfilePress={() => setCurrentView('profile')}
+          onBoundaryPress={() => setCurrentView('boundary')}
+          onShopPress={() => setCurrentView('shops')}
+          onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
+          showProfileMenu={showProfileMenu}
+          onLogout={handleLogout}
+          onCloseProfileMenu={handleCloseProfileMenu}
+        />
+        <View style={styles.pageContent}>
+          <ShopCard
+            onBack={() => setCurrentView('profile')}
+            userName={selectedShop.ownerName}
+            shopId={selectedShop.shopId}
+          />
+        </View>
+      </Background>
     );
   }
 
   return (
     <Background>
-      <View style={styles.container}>
-        {/* Header with profile and greeting - Only show on main screen */}
-        {currentView === 'main' && (
-          <View style={styles.headerRow}>
-            <TouchableOpacity onPress={() => setShowProfileMenu((s) => !s)} activeOpacity={0.8}>
-              <Image
-                source={require('../assets/profile-icon.png')}
-                style={styles.profilePic}
-              />
-            </TouchableOpacity>
-            <View style={styles.greetingWrap}>
-              <Text style={styles.greeting}>Hello!!</Text>
-              <Text style={styles.collegeName}>{collegeName}</Text>
-            </View>
-            {showProfileMenu && (
-              <>
-                {/* Backdrop to close on outside tap */}
-                <TouchableOpacity
-                  style={styles.backdrop}
-                  activeOpacity={1}
-                  onPress={() => setShowProfileMenu(false)}
-                />
-                <View style={styles.profileMenu}>
-                  <TouchableOpacity style={styles.profileMenuItem} onPress={() => setLogout(true)}>
-                    <Text style={styles.profileMenuText}>Logout</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        )}
+      <FloatingHeader
+        userName={userName}
+        collegeName={collegeName}
+        activeTab={currentView === 'shopCard' ? 'profileMenu' : currentView}
+        onProfilePress={() => setCurrentView('profile')}
+        onBoundaryPress={() => setCurrentView('boundary')}
+        onShopPress={() => setCurrentView('shops')}
+        onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
+        showProfileMenu={showProfileMenu}
+        onLogout={handleLogout}
+        onCloseProfileMenu={handleCloseProfileMenu}
+      />
 
-        {/* Welcome message - Only show on main screen */}
-        {currentView === 'main' && (
-          <View style={styles.welcomeContainer}>
-            <Text style={styles.welcomeTitle}>College Administration</Text>
-            <Text style={styles.welcomeSubtitle}>Manage campus services and settings</Text>
-          </View>
-        )}
-
-        {/* Main tiles - Different views based on currentView */}
-        {currentView === 'main' && (
-          <View style={styles.tilesGrid}>
-            <TouchableOpacity
-              style={styles.tile}
-              activeOpacity={0.9}
-              onPress={() => setCurrentView('profile')}
-            >
-              <View style={[styles.tileIconImage]}>
-                <Image
-                  source={require('../assets/profile-icon.png')}
-                  style={styles.tileImageContent}
-                />
-              </View>
-              <Text style={styles.tileLabel}>College Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tile}
-              activeOpacity={0.9}
-              onPress={() => setCurrentView('boundary')}
-            >
-              <View style={[styles.tileIconImage]}>
-                <Image
-                  source={require('../assets/shop.png')}
-                  style={styles.tileImageContent}
-                />
-              </View>
-              <Text style={styles.tileLabel}>Location Boundaries</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tile}
-              activeOpacity={0.9}
-              onPress={() => setCurrentView('shops')}
-            >
-              <View style={[styles.tileIconImage]}>
-                <Image
-                  source={require('../assets/shop.png')}
-                  style={styles.tileImageContent}
-                />
-              </View>
-              <Text style={styles.tileLabel}>Shop Management</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
+      {/* Main Content */}
+      <View style={styles.pageContent}>
         {/* College Profile View */}
         {currentView === 'profile' && (
           <CollegeProfile
             profile={collegeProfile}
             onSave={handleSaveProfile}
-            onBack={() => setCurrentView('main')}
+            onBack={() => setCurrentView('profile')}
           />
         )}
 
         {/* Geolocation Boundary View */}
         {currentView === 'boundary' && (
           <GeolocationBoundary
-            onBack={() => setCurrentView('main')}
+            onBack={() => setCurrentView('profile')}
             onSave={handleSaveBoundary}
             initialBoundary={boundary}
           />
@@ -249,7 +203,7 @@ function CollegeAdminOfficeHP({ userName = 'User', collegeName = 'College' }: Pr
         {currentView === 'shops' && (
           <ShopManagement
             shops={shops}
-            onBack={() => setCurrentView('main')}
+            onBack={() => setCurrentView('profile')}
             onAddShop={handleAddShop}
             onEditShop={handleEditShop}
             onDeleteShop={handleDeleteShop}
