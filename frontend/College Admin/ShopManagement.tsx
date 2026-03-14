@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Alert, Image, StyleSheet } from 'react-native';
-import { Text, TextInput } from '../components/GlobalComponents';
-import { styles } from '../../css style/CollegeAdminOfficeHP.styles';
+import { View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Text as GlobalText } from '../components/GlobalComponents';
+import { shopManagementStyles as styles } from '../../css style/ShopManagement.styles';
 
 interface Shop {
   id: string;
@@ -102,14 +102,14 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
       <View style={styles.formContainer}>
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={cancelEdit} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
+            <GlobalText style={styles.backIcon}>←</GlobalText>
           </TouchableOpacity>
           <View style={styles.headerRightPlaceholder} />
         </View>
 
-        <Text style={styles.formTitle}>
+        <GlobalText style={styles.formTitle}>
           {currentView === 'add' ? 'Add New Shop' : 'Edit Shop'}
-        </Text>
+        </GlobalText>
 
         <View style={styles.profileSection}>
           <TextInput
@@ -166,9 +166,9 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
           />
 
           <TouchableOpacity style={styles.button} onPress={currentView === 'add' ? handleAddShop : handleEditShop}>
-            <Text style={styles.buttonText}>
+            <GlobalText style={styles.buttonText}>
               {currentView === 'add' ? 'Add Shop' : 'Update Shop'}
-            </Text>
+            </GlobalText>
           </TouchableOpacity>
         </View>
       </View>
@@ -177,21 +177,21 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
 
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.formTitle}>Shop Management</Text>
+      <GlobalText style={styles.formTitle}>Shop Management</GlobalText>
 
       <TouchableOpacity style={styles.addButton} onPress={() => setCurrentView('add')}>
-        <Text style={styles.addButtonText}>Add New Shop</Text>
+        <GlobalText style={styles.addButtonText}>Add New Shop</GlobalText>
       </TouchableOpacity>
 
       <View style={styles.profileSection}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: '#111' }}>Current Shops</Text>
-          <Text style={{ fontSize: 14, color: '#666' }}>Total: {shops.length}</Text>
+          <GlobalText style={{ fontSize: 16, fontWeight: '700', color: '#111' }}>Current Shops</GlobalText>
+          <GlobalText style={{ fontSize: 14, color: '#666' }}>Total: {shops.length}</GlobalText>
         </View>
 
         {shops.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No shops added yet</Text>
+            <GlobalText style={styles.emptyText}>No shops added yet</GlobalText>
           </View>
         ) : (
           <View style={styles.shopList}>
@@ -199,46 +199,46 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
               <View key={shop.id} style={styles.shopItem}>
                 <View style={styles.shopInfo}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                    <Text style={styles.shopName}>{shop.name}</Text>
+                    <GlobalText style={styles.shopName}>{shop.name}</GlobalText>
                     <View style={[
                       styles.statusBadge,
                       shop.isActive ? styles.statusActive : styles.statusInactive,
                       { marginLeft: 8 }
                     ]}>
-                      <Text style={[
+                      <GlobalText style={[
                         shop.isActive ? { color: '#4CAF50' } : { color: '#F44336' }
                       ]}>
                         {shop.isActive ? 'Active' : 'Inactive'}
-                      </Text>
+                      </GlobalText>
                     </View>
                   </View>
-                  <Text style={styles.shopDetails}>Owner: {shop.ownerName}</Text>
-                  <Text style={styles.shopDetails}>Phone: {shop.phone}</Text>
-                  {shop.email && <Text style={styles.shopDetails}>Email: {shop.email}</Text>}
-                  {shop.address && <Text style={styles.shopDetails}>Address: {shop.address}</Text>}
-                  {shop.category && <Text style={styles.shopDetails}>Category: {shop.category}</Text>}
-                  <Text style={styles.shopId}>ID: {shop.shopId}</Text>
+                  <GlobalText style={styles.shopDetails}>Owner: {shop.ownerName}</GlobalText>
+                  <GlobalText style={styles.shopDetails}>Phone: {shop.phone}</GlobalText>
+                  {shop.email && <GlobalText style={styles.shopDetails}>Email: {shop.email}</GlobalText>}
+                  {shop.address && <GlobalText style={styles.shopDetails}>Address: {shop.address}</GlobalText>}
+                  {shop.category && <GlobalText style={styles.shopDetails}>Category: {shop.category}</GlobalText>}
+                  <GlobalText style={styles.shopId}>ID: {shop.shopId}</GlobalText>
                 </View>
                 <View style={styles.shopActions}>
                   <TouchableOpacity
                     style={styles.editButton}
                     onPress={() => startEdit(shop)}
                   >
-                    <Text style={styles.editButtonText}>Edit</Text>
+                    <GlobalText style={styles.editButtonText}>Edit</GlobalText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[shop.isActive ? styles.deactivateButton : styles.cardButton]}
                     onPress={() => onToggleShopStatus(shop.id)}
                   >
-                    <Text style={shop.isActive ? styles.deactivateButtonText : styles.cardButtonText}>
+                    <GlobalText style={shop.isActive ? styles.deactivateButtonText : styles.cardButtonText}>
                       {shop.isActive ? 'Deactivate' : 'Activate'}
-                    </Text>
+                    </GlobalText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() => onDeleteShop(shop.id)}
                   >
-                    <Text style={styles.deleteButtonText}>Delete</Text>
+                    <GlobalText style={styles.deleteButtonText}>Delete</GlobalText>
                   </TouchableOpacity>
                 </View>
               </View>

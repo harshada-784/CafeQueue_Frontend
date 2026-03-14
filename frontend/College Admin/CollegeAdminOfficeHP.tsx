@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { Text } from '../components/GlobalComponents';
 import Background from '../Background';
 import Login from '../Login';
@@ -7,6 +7,7 @@ import ShopCard from '../Shops/ShopCard';
 import CollegeProfile from './CollegeProfile';
 import GeolocationBoundary from './GeolocationBoundary';
 import ShopManagement from './ShopManagement';
+import Analytics from './Analytics';
 import FloatingHeader from './FloatingHeader';
 import { styles } from '../../css style/CollegeAdminOfficeHP.styles';
 
@@ -49,7 +50,7 @@ interface BoundaryPoint {
 function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: Props) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [logout, setLogout] = useState(false);
-  const [currentView, setCurrentView] = useState<'profile' | 'boundary' | 'shops' | 'shopCard'>('profile');
+  const [currentView, setCurrentView] = useState<'profile' | 'boundary' | 'shops' | 'analytics' | 'shopCard'>('profile');
 
   // State management
   const [shops, setShops] = useState<Shop[]>([]);
@@ -148,17 +149,20 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
           onProfilePress={() => setCurrentView('profile')}
           onBoundaryPress={() => setCurrentView('boundary')}
           onShopPress={() => setCurrentView('shops')}
+          onAnalyticsPress={() => setCurrentView('analytics')}
           onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
           showProfileMenu={showProfileMenu}
           onLogout={handleLogout}
           onCloseProfileMenu={handleCloseProfileMenu}
         />
         <View style={styles.pageContent}>
-          <ShopCard
-            onBack={() => setCurrentView('profile')}
-            userName={selectedShop.ownerName}
-            shopId={selectedShop.shopId}
-          />
+          <ScrollView style={styles.scrollableContent} showsVerticalScrollIndicator={false}>
+            <ShopCard
+              onBack={() => setCurrentView('profile')}
+              userName={selectedShop.ownerName}
+              shopId={selectedShop.shopId}
+            />
+          </ScrollView>
         </View>
       </Background>
     );
@@ -173,44 +177,51 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
         onProfilePress={() => setCurrentView('profile')}
         onBoundaryPress={() => setCurrentView('boundary')}
         onShopPress={() => setCurrentView('shops')}
+        onAnalyticsPress={() => setCurrentView('analytics')}
         onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
         showProfileMenu={showProfileMenu}
         onLogout={handleLogout}
         onCloseProfileMenu={handleCloseProfileMenu}
       />
 
-      {/* Main Content */}
       <View style={styles.pageContent}>
-        {/* College Profile View */}
-        {currentView === 'profile' && (
-          <CollegeProfile
-            profile={collegeProfile}
-            onSave={handleSaveProfile}
-            onBack={() => setCurrentView('profile')}
-          />
-        )}
+          <ScrollView style={styles.scrollableContent} showsVerticalScrollIndicator={false}>
+            {/* College Profile View */}
+            {currentView === 'profile' && (
+              <CollegeProfile
+                profile={collegeProfile}
+                onSave={handleSaveProfile}
+                onBack={() => setCurrentView('profile')}
+              />
+            )}
 
-        {/* Geolocation Boundary View */}
-        {currentView === 'boundary' && (
-          <GeolocationBoundary
-            onBack={() => setCurrentView('profile')}
-            onSave={handleSaveBoundary}
-            initialBoundary={boundary}
-          />
-        )}
+            {/* Geolocation Boundary View */}
+            {currentView === 'boundary' && (
+              <GeolocationBoundary
+                onBack={() => setCurrentView('profile')}
+                onSave={handleSaveBoundary}
+                initialBoundary={boundary}
+              />
+            )}
 
-        {/* Shop Management View */}
-        {currentView === 'shops' && (
-          <ShopManagement
-            shops={shops}
-            onBack={() => setCurrentView('profile')}
-            onAddShop={handleAddShop}
-            onEditShop={handleEditShop}
-            onDeleteShop={handleDeleteShop}
-            onToggleShopStatus={handleToggleShopStatus}
-          />
-        )}
-      </View>
+            {/* Shop Management View */}
+            {currentView === 'shops' && (
+              <ShopManagement
+                shops={shops}
+                onBack={() => setCurrentView('profile')}
+                onAddShop={handleAddShop}
+                onEditShop={handleEditShop}
+                onDeleteShop={handleDeleteShop}
+                onToggleShopStatus={handleToggleShopStatus}
+              />
+            )}
+
+            {/* Analytics View */}
+            {currentView === 'analytics' && (
+              <Analytics onBack={() => setCurrentView('profile')} />
+            )}
+          </ScrollView>
+        </View>
     </Background>
   );
 }

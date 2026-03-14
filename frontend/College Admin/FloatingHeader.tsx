@@ -6,10 +6,11 @@ import { styles } from '../../css style/FloatingHeader.styles';
 interface Props {
   userName?: string;
   collegeName?: string;
-  activeTab?: 'profile' | 'boundary' | 'shops' | 'profileMenu';
+  activeTab?: 'profile' | 'boundary' | 'shops' | 'analytics' | 'profileMenu';
   onProfilePress: () => void;
   onBoundaryPress: () => void;
   onShopPress: () => void;
+  onAnalyticsPress?: () => void;
   onProfilePicPress: () => void;
   showProfileMenu: boolean;
   onLogout: () => void;
@@ -23,6 +24,7 @@ export default function FloatingHeader({
   onProfilePress,
   onBoundaryPress,
   onShopPress,
+  onAnalyticsPress,
   onProfilePicPress,
   showProfileMenu,
   onLogout,
@@ -30,7 +32,7 @@ export default function FloatingHeader({
 }: Props) {
   return (
     <View style={styles.floatingHeader}>
-      {/* Navigation Items - All 4 Icons Including Profile */}
+      {/* Navigation Items - All 5 Icons Including Analytics */}
       <View style={styles.navItems}>
         <TouchableOpacity
           style={[styles.navItem, activeTab === 'profile' && styles.activeNavItem]}
@@ -61,6 +63,16 @@ export default function FloatingHeader({
             source={require('../assets/shop.png')}
             style={[styles.navIcon, activeTab === 'shops' && styles.activeNavIcon]}
           />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.navItem, activeTab === 'analytics' && styles.activeNavItem]}
+          activeOpacity={0.8}
+          onPress={onAnalyticsPress}
+        >
+          <View style={styles.iconPlaceholder}>
+            <Text style={[styles.iconText, activeTab === 'analytics' && styles.activeIconText]}>📊</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity

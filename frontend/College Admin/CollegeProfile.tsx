@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
-import { Text, TextInput } from '../components/GlobalComponents';
-import { styles } from '../../css style/CollegeAdminOfficeHP.styles';
+import { View, TextInput, TouchableOpacity } from 'react-native';
+import { Text as GlobalText } from '../components/GlobalComponents';
+import { collegeProfileStyles } from '../../css style/CollegeProfile.styles';
 
 interface CollegeProfile {
   name: string;
@@ -27,10 +27,6 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
   const [editedProfile, setEditedProfile] = useState<CollegeProfile>(profile);
 
   const handleSave = () => {
-    if (!editedProfile.name.trim() || !editedProfile.address.trim()) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
-    }
     onSave(editedProfile);
     setEditMode(false);
   };
@@ -41,38 +37,39 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
   };
 
   return (
-    <View style={styles.formContainer}>
-      <Text style={styles.formTitle}>College Profile</Text>
+    <View style={collegeProfileStyles.formContainer}>
+
+      <GlobalText style={collegeProfileStyles.formTitle}>College Profile</GlobalText>
 
       {/* College Overview Card */}
-      <View style={styles.profileSection}>
-        <View style={styles.profileHeader}>
-          <View style={styles.profileImageContainer}>
-            <Text style={{ fontSize: 48, color: '#c09a7e' }}>🏫</Text>
+      <View style={collegeProfileStyles.profileSection}>
+        <View style={collegeProfileStyles.profileHeader}>
+          <View style={collegeProfileStyles.profileImageContainer}>
+            <GlobalText style={{ fontSize: 48, color: '#c09a7e' }}>🏫</GlobalText>
           </View>
-          <View style={styles.profileInfo}>
+          <View style={collegeProfileStyles.profileInfo}>
             {editMode ? (
               <TextInput
-                style={[styles.profileName, { borderWidth: 2, borderColor: '#c09a7e', borderRadius: 8, paddingHorizontal: 12, backgroundColor: '#fff' }]}
+                style={[collegeProfileStyles.profileName, { borderWidth: 2, borderColor: '#c09a7e', borderRadius: 8, paddingHorizontal: 12, backgroundColor: '#fff' }]}
                 value={editedProfile.name}
                 onChangeText={(text) => setEditedProfile({ ...editedProfile, name: text })}
                 placeholder="College Name"
               />
             ) : (
-              <Text style={styles.profileName}>{editedProfile.name || 'College Name'}</Text>
+              <GlobalText style={collegeProfileStyles.profileName}>{editedProfile.name || 'College Name'}</GlobalText>
             )}
-            <Text style={styles.profileType}>Educational Institution</Text>
+            <GlobalText style={collegeProfileStyles.profileType}>Educational Institution</GlobalText>
             
             {/* Quick Stats */}
-            <View style={styles.quickStats}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{editedProfile.totalStudents || '0'}</Text>
-                <Text style={styles.statLabel}>Students</Text>
+            <View style={collegeProfileStyles.quickStats}>
+              <View style={collegeProfileStyles.statItem}>
+                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.totalStudents || '0'}</GlobalText>
+                <GlobalText style={collegeProfileStyles.statLabel}>Students</GlobalText>
               </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{editedProfile.establishedYear || 'N/A'}</Text>
-                <Text style={styles.statLabel}>Since</Text>
+              <View style={collegeProfileStyles.statDivider} />
+              <View style={collegeProfileStyles.statItem}>
+                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.establishedYear || 'N/A'}</GlobalText>
+                <GlobalText style={collegeProfileStyles.statLabel}>Since</GlobalText>
               </View>
             </View>
           </View>
@@ -80,67 +77,67 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
       </View>
 
       {/* Contact Information */}
-      <View style={styles.profileSection}>
-        <Text style={styles.sectionTitle}>📞 Contact Information</Text>
-        <View style={styles.infoGrid}>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>📍</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Address</Text>
+      <View style={collegeProfileStyles.profileSection}>
+        <GlobalText style={collegeProfileStyles.sectionTitle}>📞 Contact Information</GlobalText>
+        <View style={collegeProfileStyles.infoGrid}>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📍</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>Address</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.address}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, address: text })}
                   placeholder="Enter address"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.address || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.address || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>🏙️</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>City</Text>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>🏙️</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>City</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.city}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, city: text })}
                   placeholder="Enter city"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.city || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.city || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>🌍</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>State</Text>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>🌍</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>State</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.state}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, state: text })}
                   placeholder="Enter state"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.state || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.state || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>📮</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Pincode</Text>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📮</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>Pincode</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.pincode}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, pincode: text })}
                   placeholder="Enter pincode"
@@ -148,7 +145,7 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
                   maxLength={6}
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.pincode || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.pincode || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
@@ -156,58 +153,58 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
       </View>
 
       {/* Digital Presence */}
-      <View style={styles.profileSection}>
-        <Text style={styles.sectionTitle}>🌐 Digital Presence</Text>
-        <View style={styles.infoGrid}>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>📞</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Phone</Text>
+      <View style={collegeProfileStyles.profileSection}>
+        <GlobalText style={collegeProfileStyles.sectionTitle}>🌐 Digital Presence</GlobalText>
+        <View style={collegeProfileStyles.infoGrid}>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📞</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>Phone</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.phone}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, phone: text })}
                   placeholder="Enter phone"
                   keyboardType="phone-pad"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.phone || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.phone || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>📧</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Email</Text>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📧</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>Email</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.email}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, email: text })}
                   placeholder="Enter email"
                   keyboardType="email-address"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.email || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.email || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>🌐</Text>
-            <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Website</Text>
+          <View style={collegeProfileStyles.infoCard}>
+            <GlobalText style={collegeProfileStyles.infoIcon}>🌐</GlobalText>
+            <View style={collegeProfileStyles.infoContent}>
+              <GlobalText style={collegeProfileStyles.infoLabel}>Website</GlobalText>
               {editMode ? (
                 <TextInput
-                  style={[styles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
+                  style={[collegeProfileStyles.infoValue, { borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 6, paddingHorizontal: 8, backgroundColor: '#fff' }]}
                   value={editedProfile.website}
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, website: text })}
                   placeholder="Enter website"
                 />
               ) : (
-                <Text style={styles.infoValue}>{editedProfile.website || 'Not set'}</Text>
+                <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.website || 'Not set'}</GlobalText>
               )}
             </View>
           </View>
@@ -215,22 +212,27 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
       </View>
 
       {/* Action Buttons */}
-      <View style={styles.actionContainer}>
+      <View style={collegeProfileStyles.actionContainer}>
         {editMode ? (
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={[styles.actionButton, styles.saveButton]} onPress={handleSave}>
-              <Text style={styles.actionButtonText}>💾 Save Profile</Text>
+          <View style={collegeProfileStyles.actionButtons}>
+            <TouchableOpacity style={[collegeProfileStyles.actionButton, collegeProfileStyles.saveButton]} onPress={handleSave}>
+              <GlobalText style={collegeProfileStyles.actionButtonText}>💾 Save</GlobalText>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionButton, styles.cancelButton]} onPress={handleCancel}>
-              <Text style={styles.actionButtonText}>❌ Cancel</Text>
+            <TouchableOpacity style={[collegeProfileStyles.actionButton, collegeProfileStyles.cancelButton]} onPress={handleCancel}>
+              <GlobalText style={collegeProfileStyles.actionButtonText}>❌ Cancel</GlobalText>
             </TouchableOpacity>
           </View>
-        ) : (
-          <TouchableOpacity style={[styles.actionButton, styles.editButton]} onPress={() => setEditMode(true)}>
-            <Text style={styles.actionButtonText}>✏️ Edit Profile</Text>
-          </TouchableOpacity>
-        )}
+        ) : null}
       </View>
+
+      {/* Bottom Action Buttons - Only show when not in edit mode */}
+      {!editMode && (
+        <View style={collegeProfileStyles.bottomActionContainer}>
+          <TouchableOpacity style={[collegeProfileStyles.actionButton, collegeProfileStyles.editButton]} onPress={() => setEditMode(true)}>
+            <GlobalText style={collegeProfileStyles.actionButtonText}>✏️ Edit Profile</GlobalText>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
