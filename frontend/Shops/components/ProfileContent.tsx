@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Text, TextInput } from '../../components/GlobalComponents';
+import ShopCardContent from './ShopCardContent';
 
 interface ProfileContentProps {
   profileName: string;
@@ -55,6 +56,12 @@ export default function ProfileContent({
       <TouchableOpacity style={styles.saveProfileBtn}>
         <Text style={styles.saveProfileText}>Save Profile</Text>
       </TouchableOpacity>
+
+      {/* Shop Card Section */}
+      <View style={styles.shopCardSection}>
+        <Text style={styles.sectionTitle}>🏪 Shop Card</Text>
+        <ShopCardContent displayName={profileName} />
+      </View>
     </ScrollView>
   );
 }
@@ -127,5 +134,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '800',
     fontSize: 16,
+  },
+  shopCardSection: {
+    marginTop: 24,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111',
+    marginBottom: 16,
   },
 });

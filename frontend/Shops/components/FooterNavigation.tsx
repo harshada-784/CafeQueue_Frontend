@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '../../components/GlobalComponents';
 
-type ActiveTab = 'menu' | 'orders' | 'profile' | 'shop_card' | 'analytics';
+type ActiveTab = 'menu' | 'orders' | 'profile' | 'timeslot' | 'analytics';
 
 interface FooterNavigationProps {
   activeTab: ActiveTab;
@@ -46,11 +46,11 @@ export default function FooterNavigation({ activeTab, setActiveTab }: FooterNavi
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.footerItem, activeTab === 'shop_card' && styles.footerItemActive]}
-          onPress={() => setActiveTab('shop_card')}
+          style={[styles.footerItem, activeTab === 'timeslot' && styles.footerItemActive]}
+          onPress={() => setActiveTab('timeslot')}
         >
-          <Text style={[styles.footerIcon, activeTab === 'shop_card' && styles.footerIconActive]}>💳</Text>
-          <Text style={[styles.footerLabel, activeTab === 'shop_card' && styles.footerLabelActive]}>Shop Card</Text>
+          <Text style={[styles.footerIcon, activeTab === 'timeslot' && styles.footerIconActive]}>⏰</Text>
+          <Text style={[styles.footerLabel, activeTab === 'timeslot' && styles.footerLabelActive]}>Timeslot</Text>
         </TouchableOpacity>
       </View>
     </View>

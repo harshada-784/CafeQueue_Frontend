@@ -11,6 +11,7 @@ import OrdersContent from './components/OrdersContent';
 import AnalyticsContent from './components/AnalyticsContent';
 import ProfileContent from './components/ProfileContent';
 import ShopCardContent from './components/ShopCardContent';
+import TimeslotManagement from './components/TimeslotManagement';
 import FooterNavigation from './components/FooterNavigation';
 
 type Props = {
@@ -18,7 +19,7 @@ type Props = {
   currentUsername?: string;
 };
 
-type ActiveTab = 'menu' | 'orders' | 'profile' | 'shop_card' | 'analytics';
+type ActiveTab = 'menu' | 'orders' | 'profile' | 'timeslot' | 'analytics';
 
 export default function CanteenAdminHP({ userName = 'User', currentUsername = '' }: Props) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -111,10 +112,8 @@ export default function CanteenAdminHP({ userName = 'User', currentUsername = ''
             />
           )}
 
-          {activeTab === 'shop_card' && (
-            <ShopCardContent
-              displayName={displayName}
-            />
+          {activeTab === 'timeslot' && (
+            <TimeslotManagement shopName={displayName} />
           )}
         </ScrollView>
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { View, StyleSheet, Image, ImageBackground, TouchableOpacity, ScrollView, FlatList, Animated, Dimensions } from 'react-native';
 import { Text, TextInput } from '../components/GlobalComponents';
 import Background from '../Background';
 import { getShopsForCollege, Shop } from '../shopsStore';
@@ -11,11 +11,114 @@ import OrderConfirmed from './OrderConfirmed';
 import Orders from '../Orders';
 import ECanteenCard from '../ECanteenCard';
 import { getCount, subscribe as subscribeCart } from '../cartStore';
+import { styles } from './UserHome.styles';
 
 interface Props {
   userName: string;
   collegeName: string;
 }
+
+interface Offer {
+  id: string;
+  shopName: string;
+  title: string;
+  description: string;
+  discount: string;
+  backgroundColor?: string;
+  icon?: string;
+  urgency?: string;
+  originalPrice?: string;
+  newPrice?: string;
+  imageUri: string;
+  shopLogo?: string;
+  rating?: number;
+  deliveryTime?: string;
+  offerType?: 'PERCENTAGE' | 'FLAT' | 'BOGO' | 'FREE_DELIVERY' | 'COMBO';
+  validUntil?: string;
+}
+
+const sampleOffers: Offer[] = [
+  {
+    id: '1',
+    shopName: 'Bharti Cafe',
+    title: '20% OFF on All Items',
+    description: 'On vadapav, sandwiches, burgers and more',
+    discount: '20% OFF',
+    imageUri: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=200&fit=crop', // Cafe
+    shopLogo: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=50&h=50&fit=crop&crop=face',
+    rating: 4.3,
+    deliveryTime: '10-15 min',
+    offerType: 'PERCENTAGE',
+    urgency: 'TODAY ONLY!',
+    validUntil: '11:59 PM',
+    originalPrice: '₹79',
+    newPrice: '₹63',
+  },
+  {
+    id: '2',
+    shopName: 'Dosa Cafeteria',
+    title: 'Combo Special',
+    description: 'Dosa + Coffee combo at just ₹79',
+    discount: 'COMBO',
+    imageUri: 'https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?w=400&h=200&fit=crop', // Dosa
+    shopLogo: 'https://images.unsplash.com/photo-1560272564-9f3df5c7a7b5?w=50&h=50&fit=crop&crop=face',
+    rating: 4.5,
+    deliveryTime: '15-20 min',
+    offerType: 'COMBO',
+    urgency: 'LIMITED TIME',
+    validUntil: 'Today',
+    originalPrice: '₹109',
+    newPrice: '₹79',
+  },
+  {
+    id: '3',
+    shopName: 'Cafe Coffee Day',
+    title: '50% OFF on All Beverages',
+    description: 'On cold coffee, tea, and more',
+    discount: '50% OFF',
+    imageUri: 'https://images.unsplash.com/photo-1511920182045-b4e2c4c69c2e?w=400&h=200&fit=crop', // Coffee
+    shopLogo: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=50&h=50&fit=crop&crop=face',
+    rating: 4.2,
+    deliveryTime: '20-25 min',
+    offerType: 'PERCENTAGE',
+    urgency: 'FLASH SALE',
+    validUntil: '6 PM',
+    originalPrice: '₹199',
+    newPrice: '₹99',
+  },
+  {
+    id: '4',
+    shopName: 'Pizza Hub',
+    title: 'Buy 1 Get 1 Free',
+    description: 'On medium and large pizzas',
+    discount: 'BOGO',
+    imageUri: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=200&fit=crop', // Pizza
+    shopLogo: 'https://images.unsplash.com/photo-1560272564-9f3df5c7a7b5?w=50&h=50&fit=crop&crop=face',
+    rating: 4.4,
+    deliveryTime: '30-35 min',
+    offerType: 'BOGO',
+    urgency: '2 HOURS LEFT',
+    validUntil: '4 PM',
+    originalPrice: '₹399',
+    newPrice: '₹199',
+  },
+  {
+    id: '5',
+    shopName: 'Milkshake Centre',
+    title: 'Happy Hour Special',
+    description: 'Buy 1 get 1 on all milkshakes',
+    discount: 'BOGO',
+    imageUri: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=200&fit=crop', // Milkshake
+    shopLogo: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=50&h=50&fit=crop&crop=face',
+    rating: 4.6,
+    deliveryTime: '5-10 min',
+    offerType: 'BOGO',
+    urgency: 'TODAY',
+    validUntil: 'Midnight',
+    originalPrice: '₹98',
+    newPrice: '₹49',
+  },
+];
 
 export default function UserHome({ userName, collegeName }: Props) {
   const [search, setSearch] = useState('');
@@ -27,11 +130,115 @@ export default function UserHome({ userName, collegeName }: Props) {
   const [pendingAmount, setPendingAmount] = useState<number>(0);
   const [activeShopName, setActiveShopName] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(getCount());
+  const [pressedCard, setPressedCard] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = subscribeCart(() => setCartCount(getCount()));
     return unsub;
   }, []);
+
+  const handleCardPressIn = (offerId: string) => {
+    setPressedCard(offerId);
+  };
+
+  const handleCardPressOut = () => {
+    setPressedCard(null);
+  };
+
+  const renderOfferItem = ({ item, index }: { item: Offer; index: number }) => {
+    const isPressed = pressedCard === item.id;
+
+    return (
+      <Animated.View
+        style={[
+          styles.offerCardContainer,
+          {
+            transform: [
+              {
+                scale: isPressed ? 0.98 : 1,
+              },
+            ],
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.offerCard}
+          activeOpacity={0.9}
+          onPressIn={() => handleCardPressIn(item.id)}
+          onPressOut={handleCardPressOut}
+          onPress={() => { setActiveShopName(item.shopName); setView('shop'); }}
+        >
+          {/* Food Image */}
+          <View style={styles.offerImageContainer}>
+            <Image source={{ uri: item.imageUri }} style={styles.offerImage} />
+            
+            {/* Subtle gradient overlay for better text readability */}
+            <View style={styles.imageGradientOverlay} />
+            
+            {/* Offer Badge Overlay */}
+            <View style={styles.offerBadge}>
+              <Text style={styles.offerBadgeText}>{item.discount}</Text>
+            </View>
+
+            {/* Urgency Badge */}
+            {item.urgency && (
+              <View style={styles.urgencyBadgeTop}>
+                <Text style={styles.urgencyBadgeText}>{item.urgency}</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Content Section */}
+          <View style={styles.offerContentSection}>
+            {/* Shop Header */}
+            <View style={styles.shopHeader}>
+              <View style={styles.shopInfo}>
+                <Image source={{ uri: item.shopLogo }} style={styles.shopLogo} />
+                <View style={styles.shopDetails}>
+                  <Text style={styles.shopName}>{item.shopName}</Text>
+                  <View style={styles.shopMeta}>
+                    {item.rating && (
+                      <View style={styles.ratingContainer}>
+                        <Text style={styles.ratingStar}>⭐</Text>
+                        <Text style={styles.ratingText}>{item.rating}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.deliveryTime}>{item.deliveryTime}</Text>
+                  </View>
+                </View>
+              </View>
+              
+              {/* Valid Until */}
+              {item.validUntil && (
+                <View style={styles.validUntilContainer}>
+                  <Text style={styles.validUntilText}>⏰ {item.validUntil}</Text>
+                </View>
+              )}
+            </View>
+
+            {/* Offer Details */}
+            <View style={styles.offerDetails}>
+              <Text style={styles.offerTitle}>{item.title}</Text>
+              <Text style={styles.offerDescription}>{item.description}</Text>
+              
+              {/* Price Section */}
+              {item.originalPrice && item.newPrice && (
+                <View style={styles.priceSection}>
+                  <Text style={styles.originalPrice}>{item.originalPrice}</Text>
+                  <Text style={styles.newPrice}>{item.newPrice}</Text>
+                </View>
+              )}
+            </View>
+
+            {/* Action Footer */}
+            <View style={styles.offerFooter}>
+              <Text style={styles.ctaText}>View Menu →</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
   if (doLogout) return <Login />;
 
@@ -138,15 +345,30 @@ export default function UserHome({ userName, collegeName }: Props) {
           onChangeText={setSearch}
         />
 
-        {/* Banner tile (image with overlaid text) */}
-        <ImageBackground
-          source={require('../assets/food_home_user.png')}
-          style={styles.banner}
-          imageStyle={styles.bannerImage}
-          resizeMode="cover"
-        >
-          <Text style={styles.bannerTitle}>Faster food on your Campus Way!</Text>
-        </ImageBackground>
+        {/* Offers Banner - Horizontal Scrolling */}
+        <View style={styles.offersSection}>
+          <View style={styles.offersHeader}>
+            <View style={styles.offersTitleContainer}>
+              <Text style={styles.offersTitle}>🔥 Hot Offers & Deals</Text>
+              <View style={styles.liveIndicator}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveText}>LIVE</Text>
+              </View>
+            </View>
+          </View>
+          <FlatList
+            data={sampleOffers}
+            renderItem={renderOfferItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.offersList}
+            decelerationRate="fast"
+            snapToInterval={300}
+            snapToAlignment="center"
+            ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+          />
+        </View>
 
         {/* Welcome */}
         <Text style={styles.welcomeText}>Welcome to {collegeName}!</Text>
@@ -182,86 +404,3 @@ export default function UserHome({ userName, collegeName }: Props) {
     </Background>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { paddingTop: 40, paddingHorizontal: 20 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  hamburgerBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e3e3e3' },
-  hamburgerLine: { width: 16, height: 2, backgroundColor: '#111', marginVertical: 1 },
-  headerGreeting: { flex: 1, marginLeft: 12 },
-  // Sidebar styles
-  sidebarBackdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    zIndex: 2000,
-  },
-  sidebar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: 280,
-    backgroundColor: 'white',
-    zIndex: 3000,
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    shadowOffset: { width: 2, height: 0 },
-    paddingTop: 50,
-  },
-  userInfo: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
-  },
-  username: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#111',
-    marginBottom: 4,
-  },
-  userRole: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '600',
-  },
-  sidebarItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  sidebarItemText: {
-    fontSize: 16,
-    color: '#111',
-    fontWeight: '600',
-  },
-  greeting: { fontSize: 12, color: '#666' },
-  userName: { fontSize: 16, fontWeight: '800', color: '#111' },
-  cartBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e3e3e3' },
-  cartIcon: { fontSize: 18 },
-  searchInput: { height: 42, borderRadius: 10, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1, borderColor: '#e3e3e3', marginBottom: 12 },
-  banner: { position: 'relative', borderRadius: 22, overflow: 'hidden', paddingHorizontal: 20, paddingVertical: 20, marginBottom: 0, backgroundColor: 'transparent', height: 180, justifyContent: 'center', width: '92%', alignSelf: 'center' },
-  bannerTitle: { fontWeight: '900', color: '#fff', fontSize: 22, lineHeight: 28, maxWidth: '76%', textShadowColor: 'rgba(0,0,0,0.25)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
-  bannerImage: { width: '100%', height: '100%', borderRadius: 22 },
-  bannerBgImg: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, width: '100%', height: '100%' },
-  welcomeText: { fontSize: 16, fontWeight: '700', marginVertical: 8, color: '#111' },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 8 },
-  sectionTitle: { fontSize: 20, fontWeight: '900', color: '#111' },
-  seeAll: { color: '#16A34A', fontWeight: '700' },
-  card: { backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 12, borderWidth: 1, borderColor: '#e2e2e2' },
-  shopImage: { width: '100%', height: 140, borderTopLeftRadius: 12, borderTopRightRadius: 12, backgroundColor: '#f2f2f2' },
-  cardContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12 },
-  shopName: { fontSize: 16, fontWeight: '800', color: '#111' },
-  shopMeta: { fontSize: 12, color: '#666', marginTop: 2 },
-  wishlistBtn: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e3e3e3' },
-  wishlistIcon: { fontSize: 18, color: '#666' },
-  badge: { position: 'absolute', top: -4, right: -6, backgroundColor: '#16A34A', borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
-});
