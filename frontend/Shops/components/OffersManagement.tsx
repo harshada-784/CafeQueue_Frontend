@@ -265,9 +265,12 @@ export default function OffersManagement({ shopName }: OffersManagementProps) {
   );
 
   const renderAddModal = () => (
-    <Modal visible={showAddModal || editingOffer !== null} animationType="slide" transparent>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+    <Modal visible={showAddModal || editingOffer !== null} animationType="slide" transparent={true}>
+      <View style={styles.bottomModalContainer}>
+        <View style={styles.bottomModalContent}>
+          {/* Drag Handle */}
+          <View style={styles.dragHandle} />
+          
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
               {editingOffer ? '✏️ Edit Offer' : '➕ Add New Offer'}
@@ -713,19 +716,39 @@ const styles = StyleSheet.create({
     color: '#dc3545',
   },
 
-  // Modal
-  modalOverlay: {
+  // Bottom Modal Styles
+  bottomModalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'flex-end',
   },
+  bottomModalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: '70%', // Set to exactly 50% of screen height
+    width: '100%',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: -12 },
+    elevation: 20,
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+
   modalContent: {
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 0,
     width: '95%',
-    maxHeight: '90%',
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowRadius: 20,
@@ -760,6 +783,8 @@ const styles = StyleSheet.create({
   },
   formScroll: {
     flex: 1,
+    backgroundColor: '#fafafa',
+    paddingHorizontal: 0,
   },
   formSection: {
     padding: 24,
