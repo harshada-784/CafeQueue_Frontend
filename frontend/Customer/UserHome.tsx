@@ -10,6 +10,7 @@ import PaymentScreen from './PaymentScreen';
 import OrderConfirmed from './OrderConfirmed';
 import Orders from '../Orders';
 import ECanteenCard from '../ECanteenCard';
+import AnalyticsScreen from './AnalyticsScreen';
 import { getCount, subscribe as subscribeCart } from '../cartStore';
 import { styles } from './UserHome.styles';
 
@@ -126,7 +127,7 @@ export default function UserHome({ userName, collegeName }: Props) {
   const filtered = shops.filter(s => s.name.toLowerCase().includes(search.trim().toLowerCase()));
   const [showSidebar, setShowSidebar] = useState(false);
   const [doLogout, setDoLogout] = useState(false);
-  const [view, setView] = useState<'home' | 'shop' | 'cart' | 'payment' | 'order_confirmed' | 'orders' | 'ecanteen_card'>('home');
+  const [view, setView] = useState<'home' | 'shop' | 'cart' | 'payment' | 'order_confirmed' | 'orders' | 'ecanteen_card' | 'analytics'>('home');
   const [pendingAmount, setPendingAmount] = useState<number>(0);
   const [activeShopName, setActiveShopName] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(getCount());
@@ -276,6 +277,14 @@ export default function UserHome({ userName, collegeName }: Props) {
       />
     );
   }
+  if (view === 'analytics') {
+    return (
+      <AnalyticsScreen
+        userName={userName}
+        onBack={() => setView('home')}
+      />
+    );
+  }
 
   return (
     <Background>
@@ -301,6 +310,10 @@ export default function UserHome({ userName, collegeName }: Props) {
 
             <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setView('orders'); }}>
               <Text style={styles.sidebarItemText}>📋 My Orders</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setView('analytics'); }}>
+              <Text style={styles.sidebarItemText}>📊 Analytics</Text>
             </TouchableOpacity>
 
             {userName.toLowerCase() !== 'guest' && (
