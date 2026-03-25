@@ -8,6 +8,7 @@ interface Props {
   onBack: () => void;
   userName: string;
   shopId: string;
+  shopName: string; // Add shop name
   isStudentCard?: boolean;
   studentDetails?: {
     name: string;
@@ -15,11 +16,12 @@ interface Props {
     role: string;
     phone: string;
   };
+  collegeOfficeAdmin?: boolean; // Add college office admin flag
 }
 
-function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDetails }: Props) {
+function ShopCard({ onBack, userName, shopId, shopName, isStudentCard = false, studentDetails, collegeOfficeAdmin = false }: Props) {
   // Generate a sample Shop Card ID based on the provided shop ID
-  const cardId = shopId || `SBVCOE${Math.floor(1000 + Math.random() * 9000)}`;
+  const cardId = shopId || `SHOP${shopName?.replace(/\s+/g, '').toUpperCase() || 'DEFAULT'}${Math.floor(1000 + Math.random() * 9000)}`;
   const phoneNumber = `+91 ${Math.floor(9000000000 + Math.random() * 999999999)}`;
 
   return (
@@ -30,7 +32,7 @@ function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDeta
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <Text style={styles.titleCenter} pointerEvents="none">
-            {isStudentCard ? 'E-Canteen User Card' : 'E-Canteen Shop Card'}
+            {isStudentCard ? 'E-Canteen User Card' : `${shopName} Shop License Card`}
           </Text>
           <View style={styles.headerRightPlaceholder} />
         </View>
@@ -41,18 +43,18 @@ function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDeta
           {/* Card Header */}
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>
-              {isStudentCard ? 'E-Canteen User Card' : 'E-Canteen Shop Card'}
+              {isStudentCard ? 'E-Canteen User Card' : `${shopName} Shop License Card`}
             </Text>
             <View style={styles.cardLogo}>
               <Text style={styles.logoText}>{isStudentCard ? '👤' : '🏪'}</Text>
             </View>
           </View>
 
-          {/* Card Content */}
+          {/* Card Content - Shop Specific */}
           <View style={styles.cardContent}>
             <View style={styles.infoRow}>
               <Text style={styles.label}>
-                {isStudentCard ? 'Card ID:' : 'Shop ID:'}
+                {isStudentCard ? 'Card ID:' : 'License ID:'}
               </Text>
               <Text style={styles.value}>{cardId}</Text>
             </View>
@@ -63,62 +65,66 @@ function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDeta
               <Text style={styles.label}>
                 {isStudentCard ? 'Name:' : 'Shop Name:'}
               </Text>
+              <Text style={styles.value}>{shopName}</Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>
+                {isStudentCard ? 'Authorized for:' : 'License Type:'}
+              </Text>
+              <Text style={styles.value}>
+                {isStudentCard ? 'Food Service Access' : 'Food Service Operations'}
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>
+                {isStudentCard ? 'Valid Until:' : 'Valid Until:'}
+              </Text>
+              <Text style={styles.value}>31/12/2025</Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>
+                {isStudentCard ? 'Issued By:' : 'Issued By:'}
+              </Text>
+              <Text style={styles.value}>College Office Admin</Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Shop Owner:</Text>
               <Text style={styles.value}>{userName}</Text>
             </View>
 
             <View style={styles.divider} />
 
             <View style={styles.infoRow}>
-              <Text style={styles.label}>Role:</Text>
-              <Text style={styles.value}>
-                {isStudentCard ? (studentDetails?.role || 'Student') : 'Shop'}
-              </Text>
+              <Text style={styles.label}>Contact:</Text>
+              <Text style={styles.value}>{phoneNumber}</Text>
             </View>
-
-            {isStudentCard && studentDetails && (
-              <>
-                <View style={styles.divider} />
-
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Department:</Text>
-                  <Text style={styles.value}>{studentDetails.department}</Text>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Phone:</Text>
-                  <Text style={styles.value}>{studentDetails.phone}</Text>
-                </View>
-              </>
-            )}
-
-            {!isStudentCard && (
-              <>
-                <View style={styles.divider} />
-
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Shop Owner Name:</Text>
-                  <Text style={styles.value}>{userName}</Text>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Phone:</Text>
-                  <Text style={styles.value}>{phoneNumber}</Text>
-                </View>
-              </>
-            )}
           </View>
 
           {/* Card Footer */}
           <View style={styles.cardFooter}>
             <Text style={styles.footerText}>
-              {isStudentCard ? 'Authorized for food service access' : 'Authorized for food service operations'}
+              {isStudentCard 
+                ? 'Authorized for food service access' 
+                : 'Authorized for food service operations'
+              }
             </Text>
             <Text style={styles.footerSubtext}>
-              {isStudentCard ? 'Valid for current semester' : 'Valid for current academic year'}
+              {isStudentCard 
+                ? 'Valid for current semester' 
+                : 'Valid for current academic year'
+              }
             </Text>
           </View>
         </View>
@@ -126,7 +132,7 @@ function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDeta
         {/* Additional Info */}
         <View style={styles.infoContainer}>
           <Text style={styles.infoTitle}>
-            {isStudentCard ? 'User Card Usage:' : 'Shop Card Usage:'}
+            {isStudentCard ? 'Shop Card Usage:' : 'Shop Card Usage:'}
           </Text>
           <Text style={styles.infoText}>
             {isStudentCard
@@ -137,13 +143,13 @@ function ShopCard({ onBack, userName, shopId, isStudentCard = false, studentDeta
           <Text style={styles.infoText}>
             {isStudentCard
               ? '• Required for order processing and meal access'
-              : '• Required for order processing and inventory'
+              : '• Required for order processing and inventory management'
             }
           </Text>
           <Text style={styles.infoText}>
             {isStudentCard
               ? '• Report lost card to administration immediately'
-              : '• Report lost card to administration immediately'
+              : '• Report lost card to college office immediately'
             }
           </Text>
         </View>

@@ -10,12 +10,14 @@ import {
   deleteTimeslot,
   Timeslot 
 } from '../../timeslotStore';
+import OffersManagement from './OffersManagement';
 
 interface TimeslotManagementProps {
   shopName: string;
 }
 
 export default function TimeslotManagement({ shopName }: TimeslotManagementProps) {
+  const [activeTab, setActiveTab] = useState<'timeslots' | 'offers'>('timeslots');
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [currentTimeslot, setCurrentTimeslot] = useState<Timeslot | null>(null);
   const [nextTimeslot, setNextTimeslot] = useState<Timeslot | null>(null);
@@ -369,100 +371,127 @@ export default function TimeslotManagement({ shopName }: TimeslotManagementProps
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Enhanced Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>⏰ Timeslot Management</Text>
-          <Text style={styles.subtitle}>Manage your queue slots efficiently</Text>
-        </View>
+    <View style={styles.container}>
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
         <TouchableOpacity 
-          style={styles.addButton}
-          onPress={() => {
-            resetForm();
-            setShowAddModal(true);
-          }}
+          style={[styles.tab, activeTab === 'timeslots' && styles.activeTab]}
+          onPress={() => setActiveTab('timeslots')}
         >
-          <Text style={styles.addButtonText}>➕ Add Slot</Text>
+          <Text style={[styles.tabText, activeTab === 'timeslots' && styles.activeTabText]}>
+            ⏰ Timeslots
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'offers' && styles.activeTab]}
+          onPress={() => setActiveTab('offers')}
+        >
+          <Text style={[styles.tabText, activeTab === 'offers' && styles.activeTabText]}>
+            🎉 Offers
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Enhanced Current Status */}
-      {currentTimeslot && (
-        <View style={[styles.statusCard, styles.currentStatusCard]}>
-          <View style={styles.statusHeader}>
-            <Text style={styles.statusTitle}>🔴 Current Timeslot</Text>
-            <View style={styles.liveBadge}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveBadgeText}>LIVE</Text>
+      {/* Tab Content */}
+      {activeTab === 'timeslots' ? (
+        <ScrollView style={styles.content} contentContainerStyle={styles.timeslotContent}>
+          {/* Enhanced Header */}
+          <View style={styles.header}>
+            <View style={styles.headerContent}>
+              <Text style={styles.title}>⏰ Timeslot Management</Text>
+              <Text style={styles.subtitle}>Manage your queue slots efficiently</Text>
             </View>
+            <TouchableOpacity 
+              style={styles.addButton}
+              onPress={() => {
+                resetForm();
+                setShowAddModal(true);
+              }}
+            >
+              <Text style={styles.addButtonText}>➕ Add Slot</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.statusDetails}>
-            <Text style={styles.statusTime}>
-              {currentTimeslot.startTime} - {currentTimeslot.endTime}
-            </Text>
-            <View style={styles.statusRow}>
-              <Text style={styles.statusOrders}>
-                {currentTimeslot.currentOrders}/{currentTimeslot.maxOrders} orders
-              </Text>
-              <Text style={styles.statusRemaining}>
-                {getRemainingSlots(currentTimeslot)} slots left
-              </Text>
-            </View>
-            <View style={styles.miniProgress}>
-              <View style={styles.miniProgressBar}>
-                <View 
-                  style={[
-                    styles.miniProgressFill, 
-                    { 
-                      width: `${(currentTimeslot.currentOrders / currentTimeslot.maxOrders) * 100}%`,
-                      backgroundColor: getRemainingSlots(currentTimeslot) <= 2 ? '#ff9800' : '#4CAF50'
-                    }
-                  ]} 
-                />
+
+          {/* Enhanced Current Status */}
+          {currentTimeslot && (
+            <View style={[styles.statusCard, styles.currentStatusCard]}>
+              <View style={styles.statusHeader}>
+                <Text style={styles.statusTitle}>🔴 Current Timeslot</Text>
+                <View style={styles.liveBadge}>
+                  <View style={styles.liveDot} />
+                  <Text style={styles.liveBadgeText}>LIVE</Text>
+                </View>
               </View>
-              <Text style={styles.miniProgressText}>
-                {Math.round((currentTimeslot.currentOrders / currentTimeslot.maxOrders) * 100)}% filled
-              </Text>
+              <View style={styles.statusDetails}>
+                <Text style={styles.statusTime}>
+                  {currentTimeslot.startTime} - {currentTimeslot.endTime}
+                </Text>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusOrders}>
+                    {currentTimeslot.currentOrders}/{currentTimeslot.maxOrders} orders
+                  </Text>
+                  <Text style={styles.statusRemaining}>
+                    {getRemainingSlots(currentTimeslot)} slots left
+                  </Text>
+                </View>
+                <View style={styles.miniProgress}>
+                  <View style={styles.miniProgressBar}>
+                    <View 
+                      style={[
+                        styles.miniProgressFill, 
+                        { 
+                          width: `${(currentTimeslot.currentOrders / currentTimeslot.maxOrders) * 100}%`,
+                          backgroundColor: getRemainingSlots(currentTimeslot) <= 2 ? '#ff9800' : '#4CAF50'
+                        }
+                      ]} 
+                    />
+                  </View>
+                  <Text style={styles.miniProgressText}>
+                    {Math.round((currentTimeslot.currentOrders / currentTimeslot.maxOrders) * 100)}% filled
+                  </Text>
+                </View>
+              </View>
             </View>
+          )}
+
+          {/* Enhanced Next Timeslot */}
+          {nextTimeslot && !currentTimeslot && (
+            <View style={[styles.statusCard, styles.nextStatusCard]}>
+              <View style={styles.statusHeader}>
+                <Text style={styles.statusTitle}>⏰ Next Available Timeslot</Text>
+                <View style={styles.nextBadge}>
+                  <Text style={styles.nextBadgeText}>NEXT</Text>
+                </View>
+              </View>
+              <View style={styles.statusDetails}>
+                <Text style={styles.statusTime}>
+                  {nextTimeslot.startTime} - {nextTimeslot.endTime}
+                </Text>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusOrders}>
+                    {getRemainingSlots(nextTimeslot)} slots available
+                  </Text>
+                </View>
+                <Text style={styles.statusTime}>
+                  {getTimeUntilNextTimeslot(shopName)}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {/* Timeslots List */}
+          <View style={styles.timeslotsContainer}>
+            <Text style={styles.sectionTitle}>All Timeslots</Text>
+            {timeslots.map(renderTimeslotCard)}
           </View>
-        </View>
+
+          {/* Add/Edit Modal */}
+          {renderAddModal()}
+        </ScrollView>
+      ) : (
+        <OffersManagement shopName={shopName} />
       )}
-
-      {/* Enhanced Next Timeslot */}
-      {nextTimeslot && !currentTimeslot && (
-        <View style={[styles.statusCard, styles.nextStatusCard]}>
-          <View style={styles.statusHeader}>
-            <Text style={styles.statusTitle}>⏰ Next Available Timeslot</Text>
-            <View style={styles.nextBadge}>
-              <Text style={styles.nextBadgeText}>NEXT</Text>
-            </View>
-          </View>
-          <View style={styles.statusDetails}>
-            <Text style={styles.statusTime}>
-              {nextTimeslot.startTime} - {nextTimeslot.endTime}
-            </Text>
-            <View style={styles.statusRow}>
-              <Text style={styles.statusOrders}>
-                {getRemainingSlots(nextTimeslot)} slots available
-              </Text>
-            </View>
-            <Text style={styles.statusTime}>
-              {getTimeUntilNextTimeslot(shopName)}
-            </Text>
-          </View>
-        </View>
-      )}
-
-      {/* Timeslots List */}
-      <View style={styles.timeslotsContainer}>
-        <Text style={styles.sectionTitle}>All Timeslots</Text>
-        {timeslots.map(renderTimeslotCard)}
-      </View>
-
-      {/* Add/Edit Modal */}
-      {renderAddModal()}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -471,7 +500,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+  },
+  activeTab: {
+    borderBottomColor: '#FF6B35',
+    backgroundColor: '#fff8f8',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+  },
+  activeTabText: {
+    color: '#FF6B35',
+    fontWeight: '700',
+  },
   content: {
+    flex: 1,
+  },
+  timeslotContent: {
     padding: 16,
     paddingBottom: 100,
   },
