@@ -4,23 +4,24 @@ export type Shop = {
   name: string;
   minPrice: number; // starting price
   imageUri?: string;
+  isOpen?: boolean; // shop open/close status
 };
 
 const sampleShopsByCollege: Record<string, Shop[]> = {
   'Bharati Vidyapeeth': [
-    { id: 1, name: 'Bharti Cafe', minPrice: 20, imageUri: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop' },
-    { id: 2, name: 'Dosa Cafeteria', minPrice: 69, imageUri: 'https://images.unsplash.com/photo-1593253787226-567eda4ad32d?q=80&w=1200&auto=format&fit=crop' },
-    { id: 3, name: 'Milkshake Centre', minPrice: 49, imageUri: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1200&auto=format&fit=crop' },
+    { id: 1, name: 'Bharti Cafe', minPrice: 20, imageUri: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop', isOpen: true },
+    { id: 2, name: 'Dosa Cafeteria', minPrice: 69, imageUri: 'https://images.unsplash.com/photo-1593253787226-567eda4ad32d?q=80&w=1200&auto=format&fit=crop', isOpen: false },
+    { id: 3, name: 'Milkshake Centre', minPrice: 49, imageUri: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1200&auto=format&fit=crop', isOpen: true },
   ],
   'State Engineering College': [
-    { id: 4, name: 'Simran Sandwiches', minPrice: 29, imageUri: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop' },
-    { id: 5, name: 'Campus Biryani', minPrice: 79, imageUri: 'https://images.unsplash.com/photo-1604908176997-431002e04c72?q=80&w=1200&auto=format&fit=crop' },
+    { id: 4, name: 'Simran Sandwiches', minPrice: 29, imageUri: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop', isOpen: true },
+    { id: 5, name: 'Campus Biryani', minPrice: 79, imageUri: 'https://images.unsplash.com/photo-1604908176997-431002e04c72?q=80&w=1200&auto=format&fit=crop', isOpen: false },
   ],
   'City Science University': [
-    { id: 6, name: 'Green Bowl', minPrice: 39, imageUri: 'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?q=80&w=1200&auto=format&fit=crop' },
+    { id: 6, name: 'Green Bowl', minPrice: 39, imageUri: 'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?q=80&w=1200&auto=format&fit=crop', isOpen: true },
   ],
   'Lakeside Arts College': [
-    { id: 7, name: 'Artisan Wraps', minPrice: 35, imageUri: 'https://images.unsplash.com/photo-1526312426976-593c2e615d43?q=80&w=1200&auto=format&fit=crop' },
+    { id: 7, name: 'Artisan Wraps', minPrice: 35, imageUri: 'https://images.unsplash.com/photo-1526312426976-593c2e615d43?q=80&w=1200&auto=format&fit=crop', isOpen: true },
   ],
 };
 
@@ -89,6 +90,31 @@ export function getMenuForShop(shopName: string): MenuItem[] {
   });
   if (!key) return [];
   return menusByShop[key].map(m => ({ ...m }));
+}
+
+// Toggle shop open/close status
+export function toggleShopStatus(collegeName: string, shopId: number) {
+  const shops = getShopsForCollege(collegeName);
+  const shop = shops.find(s => s.id === shopId);
+  if (shop) {
+    shop.isOpen = !shop.isOpen;
+  }
+}
+
+// Update shop status
+export function updateShopStatus(collegeName: string, shopId: number, isOpen: boolean) {
+  const shops = getShopsForCollege(collegeName);
+  const shop = shops.find(s => s.id === shopId);
+  if (shop) {
+    shop.isOpen = isOpen;
+  }
+}
+
+// Get shop status
+export function getShopStatus(collegeName: string, shopId: number): boolean {
+  const shops = getShopsForCollege(collegeName);
+  const shop = shops.find(s => s.id === shopId);
+  return shop?.isOpen ?? true; // Default to open if not specified
 }
 
 // Placeholder to simulate registration from canteen admin later

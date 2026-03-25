@@ -284,29 +284,14 @@ export default function CartScreen({ onBack, onProceed = () => {} }: Props) {
                 <Text style={styles.billValue}>₹{subtotal.toFixed(2)}</Text>
               </View>
               
-              {discountAmount > 0 && (
+              {selectedDiscount && (
                 <View style={styles.billRow}>
-                  <Text style={styles.billLabelDiscount}>Discount</Text>
-                  <Text style={styles.billValueDiscount}>-₹{discountAmount.toFixed(2)}</Text>
+                  <Text style={styles.billLabel}>Discount ({selectedDiscount.code})</Text>
+                  <Text style={[styles.billValue, styles.billValueDiscount]}>
+                    -₹{discountAmount.toFixed(2)}
+                  </Text>
                 </View>
               )}
-              
-              <View style={styles.billRow}>
-                <Text style={styles.billLabel}>Delivery Fee</Text>
-                <Text style={styles.billValue}>
-                  {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}
-                </Text>
-              </View>
-              
-              <View style={styles.billRow}>
-                <Text style={styles.billLabel}>Platform Fee</Text>
-                <Text style={styles.billValue}>₹{platformFee.toFixed(2)}</Text>
-              </View>
-              
-              <View style={styles.billRow}>
-                <Text style={styles.billLabel}>Taxes</Text>
-                <Text style={styles.billValue}>₹{taxes.toFixed(2)}</Text>
-              </View>
               
               <View style={[styles.billRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>Total</Text>

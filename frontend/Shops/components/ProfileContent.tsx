@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Text, TextInput } from '../../components/GlobalComponents';
 import ShopCardContent from './ShopCardContent';
+import { updateShopStatus, getShopStatus } from '../../shopsStore';
 
 interface ProfileContentProps {
   profileName: string;
@@ -10,6 +11,7 @@ interface ProfileContentProps {
   setProfileUsername: (username: string) => void;
   profilePhoto?: string;
   profilePhotoError?: string | null;
+  shopId?: number; // Add shop ID for status management
 }
 
 export default function ProfileContent({ 
@@ -18,12 +20,34 @@ export default function ProfileContent({
   profileUsername, 
   setProfileUsername, 
   profilePhoto, 
-  profilePhotoError 
+  profilePhotoError,
+  shopId = 1 // Default to shop ID 1 for demo
 }: ProfileContentProps) {
+  const [isShopOpen, setIsShopOpen] = useState(() => getShopStatus('Bharati Vidyapeeth', shopId));
   return (
     <ScrollView style={styles.profileScroll} contentContainerStyle={styles.profileContent}>
       <Text style={styles.profileTitle}>Profile Settings</Text>
       
+      {/* Shop Status Toggle - Moved to Top */}
+      <View style={styles.shopStatusSection}>
+        <View style={styles.statusToggleContainer}>
+          <Text style={styles.sectionTitle}>🏪 Shop Status</Text>
+          <TouchableOpacity 
+            style={[styles.statusToggle, isShopOpen ? styles.statusToggleOpen : styles.statusToggleClosed]}
+            onPress={() => {
+              const newStatus = !isShopOpen;
+              setIsShopOpen(newStatus);
+              updateShopStatus('Bharati Vidyapeeth', shopId!, newStatus);
+            }}
+          >
+            <Text style={[styles.statusToggleText, isShopOpen ? styles.statusToggleTextOpen : styles.statusToggleTextClosed]}>
+              {isShopOpen ? '🟢 OPEN' : '🔴 CLOSED'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Profile Photo, Name, Username - Moved Down */}
       <View style={styles.profilePhotoRow}>
         <Image
           source={profilePhoto ? { uri: profilePhoto } : require('../../assets/profile-icon.png')}
@@ -146,5 +170,61 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111',
     marginBottom: 16,
+  },
+  // Shop Status Styles - Ultra Compact
+  shopStatusSection: {
+    marginTop: 12,
+    padding: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  statusToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  statusLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#495057',
+  },
+  statusToggle: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    minWidth: 100,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  statusToggleOpen: {
+    backgroundColor: '#28a745',
+  },
+  statusToggleClosed: {
+    backgroundColor: '#dc3545',
+  },
+  statusToggleText: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  statusToggleTextOpen: {
+    color: '#fff',
+  },
+  statusToggleTextClosed: {
+    color: '#fff',
+  },
+  statusDescription: {
+    fontSize: 12,
+    color: '#6c757d',
+    lineHeight: 18,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });

@@ -344,6 +344,35 @@ export const styles = StyleSheet.create({
   cardContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12 },
   regularShopName: { fontSize: 16, fontWeight: '800', color: '#111' },
   regularShopMeta: { fontSize: 12, color: '#666', marginTop: 2 },
+  shopStatusContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    minWidth: 60,
+    alignItems: 'center',
+  },
+  statusOpen: {
+    backgroundColor: '#28a745',
+  },
+  statusClosed: {
+    backgroundColor: '#dc3545',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  statusOpenText: {
+    color: '#fff',
+  },
+  statusClosedText: {
+    color: '#fff',
+  },
   wishlistBtn: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e3e3e3' },
   wishlistIcon: { fontSize: 18, color: '#666' },
   badge: { position: 'absolute', top: -4, right: -6, backgroundColor: '#16A34A', borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { View, StyleSheet, Image, ImageBackground, TouchableOpacity, ScrollView, FlatList, Animated, Dimensions } from 'react-native';
 import { Text, TextInput } from '../components/GlobalComponents';
 import Background from '../Background';
-import { getShopsForCollege, Shop } from '../shopsStore';
+import { getShopsForCollege, Shop, getShopStatus } from '../shopsStore';
 import Login from '../Login';
 import ShopMenu from '../ShopMenu';
 import CartScreen from './CartScreen';
@@ -303,9 +303,11 @@ export default function UserHome({ userName, collegeName }: Props) {
               <Text style={styles.sidebarItemText}>📋 My Orders</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setView('ecanteen_card'); }}>
-              <Text style={styles.sidebarItemText}>💳 My E-canteen card</Text>
-            </TouchableOpacity>
+            {userName.toLowerCase() !== 'guest' && (
+              <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setView('ecanteen_card'); }}>
+                <Text style={styles.sidebarItemText}>💳 My E-canteen card</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setDoLogout(true); }}>
               <Text style={styles.sidebarItemText}>🚪 Logout</Text>
@@ -379,23 +381,33 @@ export default function UserHome({ userName, collegeName }: Props) {
         </View>
 
         <View style={{ gap: 12, marginBottom: 24 }}>
-          {filtered.map(shop => (
-            <TouchableOpacity key={shop.id} style={styles.card} activeOpacity={0.9}
-              onPress={() => { setActiveShopName(shop.name); setView('shop'); }}>
-              {!!shop.imageUri?.trim() && (
-                <Image source={{ uri: shop.imageUri }} style={styles.shopImage} />
-              )}
-              <View style={styles.cardContent}>
-                <View>
-                  <Text style={styles.shopName}>{shop.name}</Text>
-                  <Text style={styles.shopMeta}>Items starts from ₹{shop.minPrice}</Text>
+          {filtered.map(shop => {
+            const isOpen = getShopStatus(collegeName, shop.id);
+            return (
+              <TouchableOpacity key={shop.id} style={styles.card} activeOpacity={0.9}
+                onPress={() => { setActiveShopName(shop.name); setView('shop'); }}>
+                {!!shop.imageUri?.trim() && (
+                  <Image source={{ uri: shop.imageUri }} style={styles.shopImage} />
+                )}
+                <View style={styles.cardContent}>
+                  <View>
+                    <Text style={styles.shopName}>{shop.name}</Text>
+                    <Text style={styles.shopMeta}>Items starts from ₹{shop.minPrice}</Text>
+                  </View>
+                  <View style={styles.shopStatusContainer}>
+                    <TouchableOpacity style={styles.wishlistBtn} onPress={() => { setActiveShopName(shop.name); setView('shop'); }}>
+                      <Text style={styles.wishlistIcon}>♡</Text>
+                    </TouchableOpacity>
+                    <View style={[styles.statusBadge, isOpen ? styles.statusOpen : styles.statusClosed]}>
+                      <Text style={[styles.statusText, isOpen ? styles.statusOpenText : styles.statusClosedText]}>
+                        {isOpen ? 'OPEN' : 'CLOSED'}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-                <TouchableOpacity style={styles.wishlistBtn} onPress={() => { setActiveShopName(shop.name); setView('shop'); }}>
-                  <Text style={styles.wishlistIcon}>♡</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
           {filtered.length === 0 && (
             <Text style={{ color: '#555' }}>No shops found.</Text>
           )}
