@@ -47,16 +47,69 @@ interface BoundaryPoint {
   longitude: number;
 }
 
-function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: Props) {
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [logout, setLogout] = useState(false);
+export default function CollegeAdminOfficeHP({ userName, collegeName }: Props) {
   const [currentView, setCurrentView] = useState<'profile' | 'boundary' | 'shops' | 'analytics' | 'shopCard'>('profile');
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isShopFormMode, setIsShopFormMode] = useState(false); // New state for shop form mode management
+  const [logout, setLogout] = useState(false); // Add logout state
 
-  // State management
-  const [shops, setShops] = useState<Shop[]>([]);
+  // Handle shop form mode changes
+  const handleShopViewChange = (isFormMode: boolean) => {
+    setIsShopFormMode(isFormMode);
+  };
+  const [shops, setShops] = useState<Shop[]>([
+    {
+      id: '1',
+      shopId: 'SHOP001',
+      name: 'Bharti Cafe',
+      ownerName: 'Ramesh Kumar',
+      phone: '9876543210',
+      email: 'bharti@cafe.com',
+      address: 'Near Main Building, Block A',
+      category: 'Food & Beverages',
+      establishedDate: '2015-03-15',
+      isActive: true,
+    },
+    {
+      id: '2',
+      shopId: 'SHOP002',
+      name: 'Juice Corner',
+      ownerName: 'Priya Sharma',
+      phone: '9876543211',
+      email: 'juice@corner.com',
+      address: 'Canteen Area, Ground Floor',
+      category: 'Beverages',
+      establishedDate: '2018-07-20',
+      isActive: true,
+    },
+    {
+      id: '3',
+      shopId: 'SHOP003',
+      name: 'Sandwich Bar',
+      ownerName: 'Amit Patel',
+      phone: '9876543212',
+      email: 'sandwich@bar.com',
+      address: 'Near Library Building',
+      category: 'Food',
+      establishedDate: '2019-01-10',
+      isActive: false,
+    },
+    {
+      id: '4',
+      shopId: 'SHOP004',
+      name: 'Stationery Shop',
+      ownerName: 'Sunita Reddy',
+      phone: '9876543213',
+      email: 'stationery@shop.com',
+      address: 'Academic Block, Room 101',
+      category: 'Stationery',
+      establishedDate: '2016-11-05',
+      isActive: true,
+    },
+  ]);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [collegeProfile, setCollegeProfile] = useState<CollegeProfile>({
-    name: collegeName,
+    name: collegeName || '', // Handle optional collegeName
     address: '',
     city: '',
     state: '',
@@ -160,6 +213,7 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
             <ShopCard
               onBack={() => setCurrentView('profile')}
               userName={selectedShop.ownerName}
+              shopName={selectedShop.name}
               shopId={selectedShop.shopId}
             />
           </ScrollView>
@@ -170,19 +224,22 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
 
   return (
     <Background>
-      <FloatingHeader
-        userName={userName}
-        collegeName={collegeName}
-        activeTab={currentView === 'shopCard' ? 'profileMenu' : currentView}
-        onProfilePress={() => setCurrentView('profile')}
-        onBoundaryPress={() => setCurrentView('boundary')}
-        onShopPress={() => setCurrentView('shops')}
-        onAnalyticsPress={() => setCurrentView('analytics')}
-        onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
-        showProfileMenu={showProfileMenu}
-        onLogout={handleLogout}
-        onCloseProfileMenu={handleCloseProfileMenu}
-      />
+      {/* Only show floating header when not in shop form mode */}
+      {!(currentView === 'shops' && isShopFormMode) && (
+        <FloatingHeader
+          userName={userName}
+          collegeName={collegeName}
+          activeTab={currentView === 'shopCard' ? 'profileMenu' : currentView}
+          onProfilePress={() => setCurrentView('profile')}
+          onBoundaryPress={() => setCurrentView('boundary')}
+          onShopPress={() => setCurrentView('shops')}
+          onAnalyticsPress={() => setCurrentView('analytics')}
+          onProfilePicPress={() => setShowProfileMenu(!showProfileMenu)}
+          showProfileMenu={showProfileMenu}
+          onLogout={handleLogout}
+          onCloseProfileMenu={handleCloseProfileMenu}
+        />
+      )}
 
       <View style={styles.pageContent}>
           <ScrollView style={styles.scrollableContent} showsVerticalScrollIndicator={false}>
@@ -213,6 +270,7 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
                 onEditShop={handleEditShop}
                 onDeleteShop={handleDeleteShop}
                 onToggleShopStatus={handleToggleShopStatus}
+                onViewChange={handleShopViewChange}
               />
             )}
 
@@ -225,5 +283,3 @@ function CollegeAdminOfficeHP({ userName = 'Admin', collegeName = 'College' }: P
     </Background>
   );
 }
-
-export default CollegeAdminOfficeHP;

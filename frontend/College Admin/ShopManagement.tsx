@@ -19,15 +19,24 @@ interface Shop {
 interface Props {
   shops: Shop[];
   onBack: () => void;
-  onAddShop: (shop: Omit<Shop, 'id' | 'shopId'>) => void;
+  onAddShop: (shop: Shop) => void;
   onEditShop: (shop: Shop) => void;
   onDeleteShop: (shopId: string) => void;
   onToggleShopStatus: (shopId: string) => void;
+  onViewChange?: (isFormMode: boolean) => void;
 }
 
-export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, onDeleteShop, onToggleShopStatus }: Props) {
+export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, onDeleteShop, onToggleShopStatus, onViewChange }: Props) {
   const [currentView, setCurrentView] = useState<'list' | 'add' | 'edit'>('list');
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+
+  // Notify parent when view changes
+  const updateView = (newView: 'list' | 'add' | 'edit') => {
+    setCurrentView(newView);
+    if (onViewChange) {
+      onViewChange(newView !== 'list');
+    }
+  };
 
   // Form state for add/edit
   const [formData, setFormData] = useState({
@@ -46,9 +55,16 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
       return;
     }
 
-    onAddShop({ ...formData, isActive: true });
+    const newShop: Shop = {
+      ...formData,
+      id: Date.now().toString(), // Generate unique ID
+      shopId: `SHOP${Date.now()}`, // Generate unique shop ID
+      isActive: true,
+    };
+
+    onAddShop(newShop);
     resetForm();
-    setCurrentView('list');
+    updateView('list');
   };
 
   const handleEditShop = () => {
@@ -61,7 +77,7 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
 
     onEditShop(updatedShop);
     resetForm();
-    setCurrentView('list');
+    updateView('list');
     setSelectedShop(null);
   };
 
@@ -88,18 +104,18 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
       category: shop.category,
       establishedDate: shop.establishedDate,
     });
-    setCurrentView('edit');
+    updateView('edit');
   };
 
   const cancelEdit = () => {
     resetForm();
-    setCurrentView('list');
+    updateView('list');
     setSelectedShop(null);
   };
 
   if (currentView === 'add' || currentView === 'edit') {
     return (
-      <View style={styles.formContainer}>
+      <View>
         <View style={styles.headerRow}>
           <TouchableOpacity onPress={cancelEdit} style={styles.backButton}>
             <GlobalText style={styles.backIcon}>←</GlobalText>
@@ -112,58 +128,86 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
         </GlobalText>
 
         <View style={styles.profileSection}>
-          <TextInput
-            style={styles.input}
-            placeholder="Shop Name *"
-            value={formData.name}
-            onChangeText={(text) => setFormData({ ...formData, name: text })}
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Shop Name *</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter shop name (e.g., Bharti Cafe)"
+              value={formData.name}
+              onChangeText={(text) => setFormData({ ...formData, name: text })}
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Owner Name *"
-            value={formData.ownerName}
-            onChangeText={(text) => setFormData({ ...formData, ownerName: text })}
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Owner Name *</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter owner's full name"
+              value={formData.ownerName}
+              onChangeText={(text) => setFormData({ ...formData, ownerName: text })}
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number *"
-            value={formData.phone}
-            onChangeText={(text) => setFormData({ ...formData, phone: text })}
-            keyboardType="phone-pad"
-            maxLength={10}
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Phone Number *</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter 10-digit phone number"
+              value={formData.phone}
+              onChangeText={(text) => setFormData({ ...formData, phone: text })}
+              keyboardType="phone-pad"
+              maxLength={10}
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={formData.email}
-            onChangeText={(text) => setFormData({ ...formData, email: text })}
-            keyboardType="email-address"
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Email Address</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter email address (optional)"
+              value={formData.email}
+              onChangeText={(text) => setFormData({ ...formData, email: text })}
+              keyboardType="email-address"
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            value={formData.address}
-            onChangeText={(text) => setFormData({ ...formData, address: text })}
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Shop Address</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter complete shop address"
+              value={formData.address}
+              onChangeText={(text) => setFormData({ ...formData, address: text })}
+              placeholderTextColor="#999"
+              multiline
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Category (e.g., Food, Beverages, Snacks)"
-            value={formData.category}
-            onChangeText={(text) => setFormData({ ...formData, category: text })}
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Category</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., Food, Beverages, Snacks, Stationery"
+              value={formData.category}
+              onChangeText={(text) => setFormData({ ...formData, category: text })}
+              placeholderTextColor="#999"
+            />
+          </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Established Date (YYYY-MM-DD)"
-            value={formData.establishedDate}
-            onChangeText={(text) => setFormData({ ...formData, establishedDate: text })}
-            placeholderTextColor="#999"
-          />
+          <View style={styles.inputGroup}>
+            <GlobalText style={styles.inputLabel}>Established Date</GlobalText>
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD (optional)"
+              value={formData.establishedDate}
+              onChangeText={(text) => setFormData({ ...formData, establishedDate: text })}
+              placeholderTextColor="#999"
+            />
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={currentView === 'add' ? handleAddShop : handleEditShop}>
             <GlobalText style={styles.buttonText}>
@@ -179,14 +223,30 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
     <View style={styles.formContainer}>
       <GlobalText style={styles.formTitle}>Shop Management</GlobalText>
 
-      <TouchableOpacity style={styles.addButton} onPress={() => setCurrentView('add')}>
-        <GlobalText style={styles.addButtonText}>Add New Shop</GlobalText>
+      {/* Quick Stats */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statCard}>
+          <GlobalText style={styles.statNumber}>{shops.length}</GlobalText>
+          <GlobalText style={styles.statLabel}>Total</GlobalText>
+        </View>
+        <View style={styles.statCard}>
+          <GlobalText style={styles.statNumber}>{shops.filter(s => s.isActive).length}</GlobalText>
+          <GlobalText style={styles.statLabel}>Open</GlobalText>
+        </View>
+        <View style={styles.statCard}>
+          <GlobalText style={styles.statNumber}>{shops.filter(s => !s.isActive).length}</GlobalText>
+          <GlobalText style={styles.statLabel}>Close</GlobalText>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.addButton} onPress={() => updateView('add')}>
+        <GlobalText style={styles.addButtonText}>+ Add New Shop</GlobalText>
       </TouchableOpacity>
 
       <View style={styles.profileSection}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <GlobalText style={{ fontSize: 16, fontWeight: '700', color: '#111' }}>Current Shops</GlobalText>
-          <GlobalText style={{ fontSize: 14, color: '#666' }}>Total: {shops.length}</GlobalText>
+        <View style={styles.sectionHeader}>
+          <GlobalText style={styles.sectionTitle}>🏪 Registered Shops</GlobalText>
+          <GlobalText style={styles.shopCount}>{shops.length} shops</GlobalText>
         </View>
 
         {shops.length === 0 ? (
@@ -202,14 +262,10 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
                     <GlobalText style={styles.shopName}>{shop.name}</GlobalText>
                     <View style={[
                       styles.statusBadge,
-                      shop.isActive ? styles.statusActive : styles.statusInactive,
+                      shop.isActive ? styles.statusOpen : styles.statusClosed,
                       { marginLeft: 8 }
                     ]}>
-                      <GlobalText style={[
-                        shop.isActive ? { color: '#4CAF50' } : { color: '#F44336' }
-                      ]}>
-                        {shop.isActive ? 'Active' : 'Inactive'}
-                      </GlobalText>
+                      {/* Removed text - now just a small colored dot */}
                     </View>
                   </View>
                   <GlobalText style={styles.shopDetails}>Owner: {shop.ownerName}</GlobalText>
@@ -227,11 +283,11 @@ export default function ShopManagement({ shops, onBack, onAddShop, onEditShop, o
                     <GlobalText style={styles.editButtonText}>Edit</GlobalText>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[shop.isActive ? styles.deactivateButton : styles.cardButton]}
+                    style={[shop.isActive ? styles.closeButton : styles.openButton]}
                     onPress={() => onToggleShopStatus(shop.id)}
                   >
-                    <GlobalText style={shop.isActive ? styles.deactivateButtonText : styles.cardButtonText}>
-                      {shop.isActive ? 'Deactivate' : 'Activate'}
+                    <GlobalText style={shop.isActive ? styles.closeButtonText : styles.openButtonText}>
+                      {shop.isActive ? 'Close' : 'Open'}
                     </GlobalText>
                   </TouchableOpacity>
                   <TouchableOpacity

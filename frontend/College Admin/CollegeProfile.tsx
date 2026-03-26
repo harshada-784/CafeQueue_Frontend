@@ -63,18 +63,27 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
             {/* Quick Stats */}
             <View style={collegeProfileStyles.quickStats}>
               <View style={collegeProfileStyles.statItem}>
-                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.totalStudents || '0'}</GlobalText>
+                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.totalStudents || '1000'}</GlobalText>
                 <GlobalText style={collegeProfileStyles.statLabel}>Students</GlobalText>
               </View>
               <View style={collegeProfileStyles.statDivider} />
               <View style={collegeProfileStyles.statItem}>
-                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.establishedYear || 'N/A'}</GlobalText>
+                <GlobalText style={collegeProfileStyles.statNumber}>{editedProfile.establishedYear || '2025'}</GlobalText>
                 <GlobalText style={collegeProfileStyles.statLabel}>Since</GlobalText>
               </View>
             </View>
           </View>
         </View>
       </View>
+
+      {/* Edit Profile Button - Prominent Position */}
+      {!editMode && (
+        <View style={collegeProfileStyles.prominentEditContainer}>
+          <TouchableOpacity style={collegeProfileStyles.prominentEditButton} onPress={() => setEditMode(true)}>
+            <GlobalText style={collegeProfileStyles.prominentEditText}>✏️ Edit Profile</GlobalText>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Contact Information */}
       <View style={collegeProfileStyles.profileSection}>
@@ -98,7 +107,7 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
           </View>
 
           <View style={collegeProfileStyles.infoCard}>
-            <GlobalText style={collegeProfileStyles.infoIcon}>🏙️</GlobalText>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📍</GlobalText>
             <View style={collegeProfileStyles.infoContent}>
               <GlobalText style={collegeProfileStyles.infoLabel}>City</GlobalText>
               {editMode ? (
@@ -115,7 +124,7 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
           </View>
 
           <View style={collegeProfileStyles.infoCard}>
-            <GlobalText style={collegeProfileStyles.infoIcon}>🌍</GlobalText>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📍</GlobalText>
             <View style={collegeProfileStyles.infoContent}>
               <GlobalText style={collegeProfileStyles.infoLabel}>State</GlobalText>
               {editMode ? (
@@ -132,7 +141,7 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
           </View>
 
           <View style={collegeProfileStyles.infoCard}>
-            <GlobalText style={collegeProfileStyles.infoIcon}>📮</GlobalText>
+            <GlobalText style={collegeProfileStyles.infoIcon}>📍</GlobalText>
             <View style={collegeProfileStyles.infoContent}>
               <GlobalText style={collegeProfileStyles.infoLabel}>Pincode</GlobalText>
               {editMode ? (
@@ -142,7 +151,6 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
                   onChangeText={(text) => setEditedProfile({ ...editedProfile, pincode: text })}
                   placeholder="Enter pincode"
                   keyboardType="numeric"
-                  maxLength={6}
                 />
               ) : (
                 <GlobalText style={collegeProfileStyles.infoValue}>{editedProfile.pincode || 'Not set'}</GlobalText>
@@ -224,15 +232,6 @@ export default function CollegeProfile({ profile, onSave, onBack }: Props) {
           </View>
         ) : null}
       </View>
-
-      {/* Bottom Action Buttons - Only show when not in edit mode */}
-      {!editMode && (
-        <View style={collegeProfileStyles.bottomActionContainer}>
-          <TouchableOpacity style={[collegeProfileStyles.actionButton, collegeProfileStyles.editButton]} onPress={() => setEditMode(true)}>
-            <GlobalText style={collegeProfileStyles.actionButtonText}>✏️ Edit Profile</GlobalText>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }

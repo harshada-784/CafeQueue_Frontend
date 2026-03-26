@@ -7,10 +7,10 @@ export const styles = StyleSheet.create({
     left: 20,
     right: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
-    padding: 10,
+    padding: 5, // Increased padding
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -23,13 +23,15 @@ export const styles = StyleSheet.create({
   },
   navItems: {
     flexDirection: 'row',
-    gap: 30,
-    justifyContent: 'center',
+    gap: 20, // Reduced gap for better spacing
+    justifyContent: 'space-evenly', // Better distribution
+    alignItems: 'center',
+    flex: 1,
   },
   navItem: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 35, // Increased size for better touch area
+    height: 35,
+    borderRadius: 17.5,
     backgroundColor: 'rgba(192, 154, 126, 0.15)',
     borderWidth: 1,
     borderColor: 'rgba(192, 154, 126, 0.3)',
@@ -37,18 +39,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 24, // Slightly smaller for better fit
+    height: 24,
+    borderRadius: 12,
+    resizeMode: 'contain', // Better image scaling
   },
   iconPlaceholder: {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconText: {
-    fontSize: 20,
+    fontSize: 18, // Slightly smaller for better fit
   },
   activeNavItem: {
     backgroundColor: '#c09a7e',
@@ -63,7 +66,6 @@ export const styles = StyleSheet.create({
     fontSize: 20,
   },
   activeNavIcon: {
-    tintColor: '#fff',
   },
   profileSection: {
     position: 'relative',
