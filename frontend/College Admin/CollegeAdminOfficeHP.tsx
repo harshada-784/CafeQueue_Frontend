@@ -3,7 +3,6 @@ import { View, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import { Text } from '../components/GlobalComponents';
 import Background from '../Background';
 import Login from '../Login';
-import ShopCard from '../Shops/ShopCard';
 import CollegeProfile from './CollegeProfile';
 import LeafletMapScreen from './LeafletMapScreen';
 import ShopManagement from './ShopManagement';
@@ -136,7 +135,7 @@ export default function CollegeAdminOfficeHP({ userName, collegeName }: Props) {
         <FloatingHeader
           userName={userName}
           collegeName={collegeName}
-          activeTab={currentView === 'shopCard' ? 'profileMenu' : currentView}
+          activeTab="profileMenu"
           onProfilePress={() => setCurrentView('profile')}
           onBoundaryPress={() => setCurrentView('boundary')}
           onShopPress={() => setCurrentView('shops')}
@@ -148,7 +147,7 @@ export default function CollegeAdminOfficeHP({ userName, collegeName }: Props) {
         />
       )}
 
-      <View style={{ flex: 1 }}>
+      <View style={styles.pageContent}>
 
         {/* PROFILE */}
         {currentView === 'profile' && (

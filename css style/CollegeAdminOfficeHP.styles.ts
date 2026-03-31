@@ -1,18 +1,13 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 40,
-    paddingHorizontal: 20,
-  },
   pageContent: {
     flex: 1,
-    marginTop: 80, // Reduced space for floating header only
-    paddingHorizontal: 20,
+    marginTop: 80, // Space for floating header
   },
   scrollableContent: {
     flex: 1,
+    paddingHorizontal: 18,
   },
   greetingSection: {
     alignItems: 'center',
