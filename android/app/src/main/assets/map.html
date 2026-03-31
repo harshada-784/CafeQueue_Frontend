@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Leaflet Map</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  var map = L.map('map').setView([18.5204, 73.8567], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  var points = [];
+  var polygon = null;
+
+  // Handle map click
+  map.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+
+    points.push([lat, lng]);
+
+    L.marker([lat, lng]).addTo(map);
+
+    if (polygon) {
+      map.removeLayer(polygon);
+    }
+
+    if (points.length >= 3) {
+      polygon = L.polygon(points, { color: 'green' }).addTo(map);
+    }
+
+    // Send data to React Native
+    window.ReactNativeWebView.postMessage(JSON.stringify(points));
+  });
+
+  // Clear boundary
+  function clearMap() {
+    map.eachLayer(function(layer) {
+      if (!!layer.toGeoJSON) {
+        map.removeLayer(layer);
+      }
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    points = [];
+  }
+</script>
+
+</body>
+</html>

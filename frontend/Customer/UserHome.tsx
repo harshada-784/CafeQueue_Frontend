@@ -9,7 +9,6 @@ import CartScreen from './CartScreen';
 import PaymentScreen from './PaymentScreen';
 import OrderConfirmed from './OrderConfirmed';
 import Orders from '../Orders';
-import ECanteenCard from '../ECanteenCard';
 import AnalyticsScreen from './AnalyticsScreen';
 import { getCount, subscribe as subscribeCart } from '../cartStore';
 import { styles } from './UserHome.styles';
@@ -127,7 +126,7 @@ export default function UserHome({ userName, collegeName }: Props) {
   const filtered = shops.filter(s => s.name.toLowerCase().includes(search.trim().toLowerCase()));
   const [showSidebar, setShowSidebar] = useState(false);
   const [doLogout, setDoLogout] = useState(false);
-  const [view, setView] = useState<'home' | 'shop' | 'cart' | 'payment' | 'order_confirmed' | 'orders' | 'ecanteen_card' | 'analytics'>('home');
+  const [view, setView] = useState<'home' | 'shop' | 'cart' | 'payment' | 'order_confirmed' | 'orders' | 'analytics'>('home');
   const [pendingAmount, setPendingAmount] = useState<number>(0);
   const [activeShopName, setActiveShopName] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(getCount());
@@ -268,15 +267,6 @@ export default function UserHome({ userName, collegeName }: Props) {
       />
     );
   }
-  if (view === 'ecanteen_card') {
-    return (
-      <ECanteenCard
-        onBack={() => setView('home')}
-        userName={userName}
-        collegeName={collegeName}
-      />
-    );
-  }
   if (view === 'analytics') {
     return (
       <AnalyticsScreen
@@ -316,11 +306,6 @@ export default function UserHome({ userName, collegeName }: Props) {
               <Text style={styles.sidebarItemText}>📊 Analytics</Text>
             </TouchableOpacity>
 
-            {userName.toLowerCase() !== 'guest' && (
-              <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setView('ecanteen_card'); }}>
-                <Text style={styles.sidebarItemText}>💳 My E-canteen card</Text>
-              </TouchableOpacity>
-            )}
 
             <TouchableOpacity style={styles.sidebarItem} onPress={() => { setShowSidebar(false); setDoLogout(true); }}>
               <Text style={styles.sidebarItemText}>🚪 Logout</Text>
